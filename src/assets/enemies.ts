@@ -4,49 +4,52 @@ export const enemies: Enemy[] = [
   {
     x: 200,
     y: 200,
-    radius: 10,
+    radius: 15,
     vx: 2,
     vy: 1,
-    speed: 5,
+    speed: 4,
     color: "yellow",
     firingPattern: {
-      bulletCount: 2, // 2 bullets: 90, 270 degrees
+      bulletCount: 3,
       initialAngle: 90,
-      fireRate: 0.5, // 1 shot every 2 seconds
+      fireRate: 2,
       lastFired: 0,
       speed: 4,
     },
+    hp: 2,
   },
   {
     x: 1000,
     y: 300,
-    radius: 10,
+    radius: 15,
     vx: -1,
     vy: 2,
     speed: 2,
     color: "blue",
     firingPattern: {
-      bulletCount: 3, // 3 bullets: 0, 120, 240 degrees
+      bulletCount: 5,
       initialAngle: 0,
-      fireRate: 1, // 1 shot per second
+      fireRate: 0.8,
       lastFired: 0,
-      speed: 8,
+      speed: 3,
     },
+    hp: 3,
   },
   {
     x: 400,
     y: 900,
-    radius: 10,
+    radius: 15,
     vx: 1,
     vy: -2,
     speed: 3,
     color: "pink",
     firingPattern: {
-      bulletCount: 1, // 1 bullet: 45 degrees
+      bulletCount: 1,
       initialAngle: 45,
-      fireRate: 2, // 2 shots per second
+      fireRate: 2,
       lastFired: 0,
-      speed: 5,
+      speed: 3,
     },
+    hp: 2,
   },
 ];

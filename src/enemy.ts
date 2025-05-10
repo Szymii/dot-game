@@ -3,6 +3,7 @@ import type { Bullet } from "./types/Bullet";
 import type { Enemy } from "./types/Enemy";
 import type { Obstacle } from "./types/Obstacle";
 import type { Player } from "./types/Player";
+import { getBrightness } from "./utils/getBrightenss";
 
 export function drawEnemies(
   ctx: CanvasRenderingContext2D,
@@ -14,11 +15,23 @@ export function drawEnemies(
   ctx.translate(-cameraX, -cameraY);
 
   enemies.forEach((enemy) => {
+    // Draw the enemy
     ctx.beginPath();
     ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
     ctx.fillStyle = enemy.color;
     ctx.fill();
     ctx.closePath();
+
+    // Calculate brightness and pick contrasting text color
+    const brightness = getBrightness(enemy.color);
+    const textColor = brightness > 150 ? "black" : "white";
+
+    // Draw HP centered on enemy
+    ctx.fillStyle = textColor;
+    ctx.font = "bold 16px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(`${enemy.hp}`, enemy.x, enemy.y);
   });
 
   ctx.restore();
@@ -52,8 +65,8 @@ export function updateEnemies(
         enemy.y,
         enemy.firingPattern.bulletCount,
         enemy.firingPattern.initialAngle,
-        enemy.firingPattern.speed, // Use speed from firingPattern
-        enemy.color // Use enemy's color
+        enemy.firingPattern.speed,
+        enemy.color
       );
       enemyBullets.push(...newBullets);
       enemy.firingPattern.lastFired = timestamp;
@@ -192,4 +205,31 @@ export function updateEnemies(
   });
 
   return gameOver;
+}
+
+// Check for collisions between player bullets and enemies
+export function checkBulletCollisionsWithEnemies(
+  enemies: Enemy[],
+  playerBullets: Bullet[]
+) {
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const enemy = enemies[i];
+    for (let j = playerBullets.length - 1; j >= 0; j--) {
+      const bullet = playerBullets[j];
+      const dx = bullet.x - enemy.x;
+      const dy = bullet.y - enemy.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const combinedRadius = bullet.radius + enemy.radius;
+
+      if (distance < combinedRadius) {
+        // Bullet hits the enemy
+        enemy.hp -= 1; // Decrease enemy HP by 1
+        playerBullets.splice(j, 1); // Remove the bullet
+        if (enemy.hp <= 0) {
+          enemies.splice(i, 1); // Remove the enemy if HP reaches 0
+          break; // Break the bullet loop since the enemy is removed
+        }
+      }
+    }
+  }
 }

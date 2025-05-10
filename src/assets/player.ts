@@ -9,14 +9,14 @@ export function createPlayer(): {
     x: 600,
     y: 600,
     radius: 20,
-    speed: 5,
+    speed: 4,
     color: "red",
     firingPattern: {
       bulletCount: 4,
       initialAngle: 0,
       fireRate: 1,
       lastFired: 0,
-      speed: 7,
+      speed: 8,
     },
     hp: 10,
   };

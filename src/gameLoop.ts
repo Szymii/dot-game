@@ -1,5 +1,9 @@
 import { drawObstacles } from "./obstacles";
-import { drawEnemies, updateEnemies } from "./enemy";
+import {
+  drawEnemies,
+  updateEnemies,
+  checkBulletCollisionsWithEnemies,
+} from "./enemy";
 import { drawMapBounds } from "./map";
 import { updateBullets, drawBullets } from "./bullets";
 import type { Camera } from "./types/Camera";
@@ -85,6 +89,9 @@ export function startGameLoop(
       gameOver = true;
     }
 
+    // Check collisions between player bullets and enemies
+    checkBulletCollisionsWithEnemies(enemies, playerBullets);
+
     updateBullets(playerBullets, ctx.canvas, obstacles);
     updateBullets(enemyBullets, ctx.canvas, obstacles);
 
@@ -102,7 +109,6 @@ export function startGameLoop(
     drawObstacles(ctx, obstacles, camera.x, camera.y);
     drawEnemies(ctx, enemies, camera.x, camera.y);
     drawPlayer(ctx, player, camera);
-
     drawHealthBar(ctx, player);
 
     animationFrameId = requestAnimationFrame(gameLoop);
