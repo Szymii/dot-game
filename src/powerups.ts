@@ -3,9 +3,9 @@ import type { PowerUp } from "./types/PowerUp";
 
 // Map of power-up types to their corresponding icon URLs
 const powerUpIcons: Record<string, string> = {
-  extraBullet: "/extraBullet.svg",
-  fasterFireRate: "/fasterFireRate.svg",
-  fasterBullets: "/fasterBullets.svg",
+  extraBullet: "/dot-game/extraBullet.svg",
+  fasterFireRate: "/dot-game/fasterFireRate.svg",
+  fasterBullets: "/dot-game/fasterBullets.svg",
 };
 
 // Object to store loaded images
