@@ -1,5 +1,6 @@
 import { drawObstacles, checkCollision } from "./obstacles";
 import { drawEnemies, updateEnemies } from "./enemy";
+import { drawMapBounds } from "./map";
 import type { Camera } from "./types/Camera";
 import type { Player } from "./types/Player";
 import type { Obstacle } from "./types/Obstacle";
@@ -13,18 +14,20 @@ export function startGameLoop(
   keys: { [key: string]: boolean },
   obstacles: Obstacle[],
   enemies: Enemy[],
-  onGameOver: () => void // Callback to signal game over to initApp
+  onGameOver: () => void
 ) {
   let gameOver = false;
   let animationFrameId: number | null = null;
 
+  const mapWidth = ctx.canvas.width;
+  const mapHeight = ctx.canvas.height;
+
   function gameLoop() {
     if (gameOver) {
-      // Display "You died" message
       ctx.save();
       ctx.translate(-camera.x, -camera.y);
       ctx.fillStyle = "black";
-      ctx.fillRect(camera.x, camera.y, camera.width, camera.height); // Clear screen
+      ctx.fillRect(camera.x, camera.y, camera.width, camera.height);
       ctx.font = "48px Arial";
       ctx.fillStyle = "red";
       ctx.textAlign = "center";
@@ -81,7 +84,6 @@ export function startGameLoop(
       Math.min(canvas.height - player.radius, player.y)
     );
 
-    // Update enemies and check for game over
     gameOver = updateEnemies(
       enemies,
       player,
@@ -96,12 +98,12 @@ export function startGameLoop(
       player.x
     )}, y: ${Math.round(player.y)}`;
 
-    ctx.save();
-    ctx.translate(-camera.x, -camera.y);
+    // Clear the entire canvas (not just the camera view)
     ctx.fillStyle = "black";
-    ctx.fillRect(camera.x, camera.y, camera.width, camera.height);
-    ctx.restore();
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // Draw the map bounds (before drawing other elements)
+    drawMapBounds(ctx, mapWidth, mapHeight, camera.x, camera.y);
     drawObstacles(ctx, obstacles, camera.x, camera.y);
     drawEnemies(ctx, enemies, camera.x, camera.y);
     drawPlayer(ctx, player, camera);
@@ -111,11 +113,9 @@ export function startGameLoop(
 
   gameLoop();
 
-  // Cleanup function to stop the game loop
   return () => {
     if (animationFrameId !== null) {
       cancelAnimationFrame(animationFrameId);
-      onGameOver();
     }
   };
 }
