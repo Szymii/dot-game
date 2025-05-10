@@ -3,4 +3,5 @@ export type FiringPattern = {
   initialAngle: number; // Initial angle in degrees
   fireRate: number; // Shots per second (e.g., 1 = once per second)
   lastFired: number; // Timestamp of last shot (in milliseconds)
+  speed: number; // Speed of bullets for this firing pattern
 };

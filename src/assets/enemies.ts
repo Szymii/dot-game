@@ -14,6 +14,7 @@ export const enemies: Enemy[] = [
       initialAngle: 90,
       fireRate: 0.5, // 1 shot every 2 seconds
       lastFired: 0,
+      speed: 4,
     },
   },
   {
@@ -29,6 +30,7 @@ export const enemies: Enemy[] = [
       initialAngle: 0,
       fireRate: 1, // 1 shot per second
       lastFired: 0,
+      speed: 8,
     },
   },
   {
@@ -44,6 +46,7 @@ export const enemies: Enemy[] = [
       initialAngle: 45,
       fireRate: 2, // 2 shots per second
       lastFired: 0,
+      speed: 5,
     },
   },
 ];

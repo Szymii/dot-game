@@ -16,6 +16,7 @@ export function createPlayer(): {
       initialAngle: 0,
       fireRate: 1,
       lastFired: 0,
+      speed: 7,
     },
   };
 

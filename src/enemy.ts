@@ -51,7 +51,9 @@ export function updateEnemies(
         enemy.x,
         enemy.y,
         enemy.firingPattern.bulletCount,
-        enemy.firingPattern.initialAngle
+        enemy.firingPattern.initialAngle,
+        enemy.firingPattern.speed, // Use speed from firingPattern
+        enemy.color // Use enemy's color
       );
       enemyBullets.push(...newBullets);
       enemy.firingPattern.lastFired = timestamp;
