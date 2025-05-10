@@ -29,6 +29,8 @@ import {
 
 function updatePositionInfo(player: Player) {
   const positionInfo = document.getElementById("position-info")!;
+  if (!positionInfo) return;
+
   positionInfo.textContent = `Position: x: ${Math.round(
     player.x
   )}, y: ${Math.round(player.y)} | HP: ${player.hp}`;

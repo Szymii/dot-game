@@ -19,7 +19,8 @@ export function createControlPanel(app: HTMLElement, player: Player) {
       <div id="key-d" class="bg-gray-700 rounded p-2">D</div>
     </div>
   `;
-  app.appendChild(controlPanel);
+
+  if (import.meta.env.MODE === "development") app.appendChild(controlPanel);
 
   // Movement state
   const keys: { [key: string]: boolean } = {
