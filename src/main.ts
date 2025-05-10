@@ -10,14 +10,14 @@ function initApp() {
 
   playButton.addEventListener("click", () => {
     playButton.remove();
-    app.className = ""; // Remove centering classes
+    app.className = "";
 
     const canvas = createCanvas(app);
     const ctx = canvas.getContext("2d")!;
-    const player = createPlayer(canvas);
+    const { player, camera } = createPlayer(canvas);
     const controlPanel = createControlPanel(app, player);
 
-    startGameLoop(ctx, player, controlPanel.keys);
+    startGameLoop(ctx, player, camera, controlPanel.keys);
   });
 }
 

@@ -1,11 +1,21 @@
-import { type Player, drawPlayer } from "./player";
+import { type Player, type Camera, drawPlayer } from "./player";
 
 export function startGameLoop(
   ctx: CanvasRenderingContext2D,
   player: Player,
+  camera: Camera,
   keys: { [key: string]: boolean }
 ) {
   function gameLoop() {
+    // Update camera to follow player
+    camera.x = player.x - camera.width / 2;
+    camera.y = player.y - camera.height / 2;
+
+    // Clamp camera to canvas bounds
+    const canvas = ctx.canvas;
+    camera.x = Math.max(0, Math.min(canvas.width - camera.width, camera.x));
+    camera.y = Math.max(0, Math.min(canvas.height - camera.height, camera.y));
+
     // Calculate movement direction
     let dx = 0;
     let dy = 0;
@@ -26,7 +36,6 @@ export function startGameLoop(
     player.y += dy;
 
     // Keep player within canvas bounds
-    const canvas = ctx.canvas;
     player.x = Math.max(
       player.radius,
       Math.min(canvas.width - player.radius, player.x)
@@ -42,12 +51,15 @@ export function startGameLoop(
       player.x
     )}, y: ${Math.round(player.y)}`;
 
-    // Clear canvas
+    // Clear only the visible area
+    ctx.save();
+    ctx.translate(-camera.x, -camera.y);
     ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(camera.x, camera.y, camera.width, camera.height);
+    ctx.restore();
 
     // Draw player
-    drawPlayer(ctx, player);
+    drawPlayer(ctx, player, camera);
 
     requestAnimationFrame(gameLoop);
   }
