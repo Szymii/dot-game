@@ -12,7 +12,7 @@ export function createPlayer(): {
     speed: 4,
     color: "red",
     firingPattern: {
-      bulletCount: 60,
+      bulletCount: 4,
       initialAngle: 0,
       fireRate: 1,
       lastFired: 0,

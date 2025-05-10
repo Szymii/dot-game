@@ -5,36 +5,6 @@ import type { Player } from "./types/Player";
 import type { Camera } from "./types/Camera";
 import type { Bullet } from "./types/Bullet";
 
-export function createPlayer(canvas: HTMLCanvasElement): {
-  player: Player;
-  camera: Camera;
-} {
-  const player: Player = {
-    x: 600,
-    y: 600,
-    radius: 20,
-    speed: 5,
-    color: "red",
-    firingPattern: {
-      bulletCount: 4,
-      initialAngle: 0,
-      fireRate: 1,
-      lastFired: 0,
-      speed: 7,
-    },
-    hp: 10,
-  };
-
-  const camera: Camera = {
-    x: player.x - canvas.width / 4,
-    y: player.y - canvas.height / 4,
-    width: canvas.width / 2,
-    height: canvas.height / 2,
-  };
-
-  return { player, camera };
-}
-
 export function drawPlayer(
   ctx: CanvasRenderingContext2D,
   player: Player,
@@ -43,14 +13,12 @@ export function drawPlayer(
   ctx.save();
   ctx.translate(-camera.x, -camera.y);
 
-  // Draw the player's dot
   ctx.beginPath();
   ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
   ctx.fillStyle = player.color;
   ctx.fill();
   ctx.closePath();
 
-  // Draw "You" text
   ctx.font = "14px Arial";
   ctx.fillStyle = "white";
   ctx.textAlign = "center";
@@ -165,21 +133,17 @@ export function drawHealthBar(ctx: CanvasRenderingContext2D, player: Player) {
   const barY = 10;
 
   // Draw in screen space (no camera translation)
-  // Background (red, for missing HP)
   ctx.fillStyle = "red";
   ctx.fillRect(barX, barY, barWidth, barHeight);
 
-  // Foreground (green, for current HP)
   const currentWidth = (player.hp / maxHP) * barWidth;
   ctx.fillStyle = "green";
   ctx.fillRect(barX, barY, currentWidth, barHeight);
 
-  // Draw border
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
   ctx.strokeRect(barX, barY, barWidth, barHeight);
 
-  // Optional: Draw HP text
   ctx.font = "16px Arial";
   ctx.fillStyle = "white";
   ctx.textAlign = "center";
