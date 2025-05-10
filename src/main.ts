@@ -11,7 +11,7 @@ function initApp() {
   const playButton = document.getElementById("playBtn")!;
   const restartButton = document.getElementById("restartBtn")!;
 
-  playButton.addEventListener("click", () => {
+  playButton.addEventListener("click", async () => {
     playButton.remove();
     app.className = "";
 
@@ -33,7 +33,7 @@ function initApp() {
     }
 
     // Start the game loop
-    const stopGame = startGameLoop(
+    const stopGame = await startGameLoop(
       ctx,
       player,
       camera,

@@ -6,6 +6,12 @@ import {
 } from "./enemy";
 import { drawMapBounds } from "./map";
 import { updateBullets, drawBullets } from "./bullets";
+import {
+  drawPowerUps,
+  checkPowerUpCollisions,
+  removeExpiredPowerUps,
+  preloadPowerUpIcons,
+} from "./powerups";
 import type { Camera } from "./types/Camera";
 import type { Player } from "./types/Player";
 import type { Obstacle } from "./types/Obstacle";
@@ -18,8 +24,9 @@ import {
   drawHealthBar,
 } from "./player";
 import type { Bullet } from "./types/Bullet";
+import type { PowerUp } from "./types/PowerUp";
 
-export function startGameLoop(
+export async function startGameLoop(
   ctx: CanvasRenderingContext2D,
   player: Player,
   camera: Camera,
@@ -28,10 +35,13 @@ export function startGameLoop(
   enemies: Enemy[],
   onGameOver: () => void
 ) {
+  await preloadPowerUpIcons();
+
   let gameOver = false;
   let animationFrameId: number | null = null;
   const playerBullets: Bullet[] = [];
   const enemyBullets: Bullet[] = [];
+  const powerUps: PowerUp[] = [];
 
   const mapWidth = ctx.canvas.width;
   const mapHeight = ctx.canvas.height;
@@ -89,8 +99,18 @@ export function startGameLoop(
       gameOver = true;
     }
 
-    // Check collisions between player bullets and enemies
-    checkBulletCollisionsWithEnemies(enemies, playerBullets);
+    checkBulletCollisionsWithEnemies(
+      enemies,
+      playerBullets,
+      powerUps,
+      timestamp
+    );
+
+    // Check for power-up collisions with the player
+    checkPowerUpCollisions(player, powerUps);
+
+    // Remove expired power-ups
+    removeExpiredPowerUps(powerUps, timestamp);
 
     updateBullets(playerBullets, ctx.canvas, obstacles);
     updateBullets(enemyBullets, ctx.canvas, obstacles);
@@ -109,6 +129,7 @@ export function startGameLoop(
     drawObstacles(ctx, obstacles, camera.x, camera.y);
     drawEnemies(ctx, enemies, camera.x, camera.y);
     drawPlayer(ctx, player, camera);
+    drawPowerUps(ctx, powerUps, camera.x, camera.y);
     drawHealthBar(ctx, player);
 
     animationFrameId = requestAnimationFrame(gameLoop);

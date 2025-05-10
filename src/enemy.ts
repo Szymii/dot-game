@@ -3,6 +3,7 @@ import type { Bullet } from "./types/Bullet";
 import type { Enemy } from "./types/Enemy";
 import type { Obstacle } from "./types/Obstacle";
 import type { Player } from "./types/Player";
+import type { PowerUp, PowerUpType } from "./types/PowerUp";
 import { getBrightness } from "./utils/getBrightenss";
 
 export function drawEnemies(
@@ -207,10 +208,11 @@ export function updateEnemies(
   return gameOver;
 }
 
-// Check for collisions between player bullets and enemies
 export function checkBulletCollisionsWithEnemies(
   enemies: Enemy[],
-  playerBullets: Bullet[]
+  playerBullets: Bullet[],
+  powerUps: PowerUp[],
+  timestamp: number
 ) {
   for (let i = enemies.length - 1; i >= 0; i--) {
     const enemy = enemies[i];
@@ -222,12 +224,31 @@ export function checkBulletCollisionsWithEnemies(
       const combinedRadius = bullet.radius + enemy.radius;
 
       if (distance < combinedRadius) {
-        // Bullet hits the enemy
-        enemy.hp -= 1; // Decrease enemy HP by 1
-        playerBullets.splice(j, 1); // Remove the bullet
+        enemy.hp -= 1;
+        playerBullets.splice(j, 1);
         if (enemy.hp <= 0) {
-          enemies.splice(i, 1); // Remove the enemy if HP reaches 0
-          break; // Break the bullet loop since the enemy is removed
+          // Create a power-up at the enemy's position
+          const powerUpTypes: PowerUpType[] = [
+            "extraBullet",
+            "fasterFireRate",
+            "fasterBullets",
+          ];
+
+          const randomType =
+            powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+          const powerUp: PowerUp = {
+            x: enemy.x,
+            y: enemy.y,
+            width: 24,
+            height: 24,
+            type: randomType,
+            spawnTime: timestamp,
+          };
+          powerUps.push(powerUp);
+
+          // Remove the enemy
+          enemies.splice(i, 1);
+          break;
         }
       }
     }
