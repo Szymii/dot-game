@@ -9,6 +9,7 @@ import { enemies } from "./assets/enemies";
 function initApp() {
   const app = document.getElementById("app")!;
   const playButton = document.getElementById("playBtn")!;
+  const restartButton = document.getElementById("restartBtn")!;
 
   playButton.addEventListener("click", () => {
     playButton.remove();
@@ -19,18 +20,38 @@ function initApp() {
     const { player, camera } = createPlayer(canvas);
     const controlPanel = createControlPanel(app, player);
 
+    function resetGame() {
+      window.location.reload();
+    }
+
+    function onGameOver() {
+      restartButton.style.display = "block";
+      restartButton.style.position = "absolute";
+      restartButton.style.top = "50%";
+      restartButton.style.left = "50%";
+      restartButton.style.transform = "translateX(-50%)";
+    }
+
+    // Start the game loop
     const stopGame = startGameLoop(
       ctx,
       player,
       camera,
       controlPanel.keys,
       obstacles,
-      enemies
+      enemies,
+      onGameOver
     );
 
+    // Add event listener for the reset button
+    restartButton.addEventListener("click", resetGame);
+
+    // Optional: Stop the game on Escape (for debugging)
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        stopGame();
+        if (stopGame) {
+          stopGame();
+        }
       }
     });
   });

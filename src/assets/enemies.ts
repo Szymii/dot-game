@@ -7,7 +7,7 @@ export const enemies: Enemy[] = [
     radius: 10,
     vx: 2,
     vy: 1,
-    speed: 2,
+    speed: 5,
     color: "yellow",
   },
   {
@@ -17,7 +17,7 @@ export const enemies: Enemy[] = [
     vx: -1,
     vy: 2,
     speed: 2,
-    color: "yellow",
+    color: "blue",
   },
   {
     x: 400,
@@ -25,7 +25,7 @@ export const enemies: Enemy[] = [
     radius: 10,
     vx: 1,
     vy: -2,
-    speed: 2,
-    color: "yellow",
+    speed: 3,
+    color: "pink",
   },
 ];

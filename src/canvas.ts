@@ -1,7 +1,6 @@
 export function createCanvas(app: HTMLElement): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.id = "gameCanvas";
-  canvas.className = "fixed top-0 left-0";
   app.appendChild(canvas);
 
   const ctx = canvas.getContext("2d")!;

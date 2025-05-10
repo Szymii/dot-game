@@ -23,7 +23,7 @@ export function drawEnemies(
   ctx.restore();
 }
 
-// Update enemy positions and handle collisions with bouncing
+// Update enemy positions and handle collisions
 export function updateEnemies(
   enemies: Enemy[],
   player: Player,
@@ -31,10 +31,17 @@ export function updateEnemies(
   playerNextY: number,
   obstacles: Obstacle[],
   canvas: HTMLCanvasElement
-) {
+): boolean {
   let gameOver = false;
 
   enemies.forEach((enemy, index) => {
+    // Normalize velocity to ensure consistent speed
+    const speedMagnitude = Math.sqrt(enemy.vx * enemy.vx + enemy.vy * enemy.vy);
+    if (speedMagnitude !== 0) {
+      enemy.vx = (enemy.vx / speedMagnitude) * enemy.speed;
+      enemy.vy = (enemy.vy / speedMagnitude) * enemy.speed;
+    }
+
     // Store proposed position
     let nextX = enemy.x + enemy.vx;
     let nextY = enemy.y + enemy.vy;
@@ -118,6 +125,15 @@ export function updateEnemies(
       }
     });
 
+    // Collision with player (using player’s new position)
+    const dx = nextX - playerNextX;
+    const dy = nextY - playerNextY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance < enemy.radius + player.radius) {
+      gameOver = true; // Signal to stop the game
+      return; // Stop updating enemies
+    }
+
     // Collision with other enemies
     for (let i = 0; i < enemies.length; i++) {
       if (i === index) continue;
@@ -157,15 +173,6 @@ export function updateEnemies(
         nextX = enemy.x + enemy.vx;
         nextY = enemy.y + enemy.vy;
       }
-    }
-
-    // Collision with player
-    const dx = nextX - playerNextX;
-    const dy = nextY - playerNextY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    if (distance < enemy.radius + player.radius) {
-      gameOver = true; // Signal to stop the game
-      return; // Stop updating enemies
     }
 
     // Update position

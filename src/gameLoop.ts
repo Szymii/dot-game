@@ -12,7 +12,8 @@ export function startGameLoop(
   camera: Camera,
   keys: { [key: string]: boolean },
   obstacles: Obstacle[],
-  enemies: Enemy[]
+  enemies: Enemy[],
+  onGameOver: () => void // Callback to signal game over to initApp
 ) {
   let gameOver = false;
   let animationFrameId: number | null = null;
@@ -34,6 +35,8 @@ export function startGameLoop(
         camera.y + camera.height / 2
       );
       ctx.restore();
+
+      onGameOver();
       return;
     }
 
@@ -103,17 +106,16 @@ export function startGameLoop(
     drawEnemies(ctx, enemies, camera.x, camera.y);
     drawPlayer(ctx, player, camera);
 
-    if (!gameOver) {
-      animationFrameId = requestAnimationFrame(gameLoop);
-    }
+    animationFrameId = requestAnimationFrame(gameLoop);
   }
 
   gameLoop();
 
-  // Return a cleanup function to stop the game loop if needed
+  // Cleanup function to stop the game loop
   return () => {
     if (animationFrameId !== null) {
       cancelAnimationFrame(animationFrameId);
+      onGameOver();
     }
   };
 }
