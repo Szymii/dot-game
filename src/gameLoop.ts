@@ -6,13 +6,14 @@ import type { Camera } from "./types/Camera";
 import type { Player } from "./types/Player";
 import type { Obstacle } from "./types/Obstacle";
 import type { Enemy } from "./types/Enemy";
-import type { Bullet } from "./types/Bullet";
 import {
   drawPlayer,
   updatePlayer,
   firePlayerBullets,
   checkBulletCollisionsWithPlayer,
+  drawHealthBar,
 } from "./player";
+import type { Bullet } from "./types/Bullet";
 
 export function startGameLoop(
   ctx: CanvasRenderingContext2D,
@@ -52,7 +53,6 @@ export function startGameLoop(
       return;
     }
 
-    // Update player position
     const { playerNextX, playerNextY } = updatePlayer(
       player,
       camera,
@@ -61,10 +61,8 @@ export function startGameLoop(
       ctx.canvas
     );
 
-    // Player firing logic
     firePlayerBullets(player, timestamp, playerBullets);
 
-    // Check for enemy bullet collisions with player
     const bulletCollisionGameOver = checkBulletCollisionsWithPlayer(
       player,
       enemyBullets
@@ -73,7 +71,6 @@ export function startGameLoop(
       gameOver = true;
     }
 
-    // Update enemies and their firing
     const enemyCollisionGameOver = updateEnemies(
       enemies,
       player,
@@ -88,11 +85,9 @@ export function startGameLoop(
       gameOver = true;
     }
 
-    // Update bullets (with obstacle collision)
     updateBullets(playerBullets, ctx.canvas, obstacles);
     updateBullets(enemyBullets, ctx.canvas, obstacles);
 
-    // Update position and HP info
     const positionInfo = document.getElementById("position-info")!;
     positionInfo.textContent = `Position: x: ${Math.round(
       player.x
@@ -107,6 +102,8 @@ export function startGameLoop(
     drawObstacles(ctx, obstacles, camera.x, camera.y);
     drawEnemies(ctx, enemies, camera.x, camera.y);
     drawPlayer(ctx, player, camera);
+
+    drawHealthBar(ctx, player);
 
     animationFrameId = requestAnimationFrame(gameLoop);
   }
