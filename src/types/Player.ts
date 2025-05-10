@@ -7,4 +7,5 @@ export interface Player {
   speed: number;
   color: string;
   firingPattern: FiringPattern;
+  hp: number;
 }

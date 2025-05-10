@@ -6,8 +6,13 @@ import type { Camera } from "./types/Camera";
 import type { Player } from "./types/Player";
 import type { Obstacle } from "./types/Obstacle";
 import type { Enemy } from "./types/Enemy";
-import { drawPlayer, updatePlayer, firePlayerBullets } from "./player";
 import type { Bullet } from "./types/Bullet";
+import {
+  drawPlayer,
+  updatePlayer,
+  firePlayerBullets,
+  checkBulletCollisionsWithPlayer,
+} from "./player";
 
 export function startGameLoop(
   ctx: CanvasRenderingContext2D,
@@ -47,7 +52,7 @@ export function startGameLoop(
       return;
     }
 
-    // Update player position and get next position for collision checks
+    // Update player position
     const { playerNextX, playerNextY } = updatePlayer(
       player,
       camera,
@@ -59,8 +64,17 @@ export function startGameLoop(
     // Player firing logic
     firePlayerBullets(player, timestamp, playerBullets);
 
+    // Check for enemy bullet collisions with player
+    const bulletCollisionGameOver = checkBulletCollisionsWithPlayer(
+      player,
+      enemyBullets
+    );
+    if (bulletCollisionGameOver) {
+      gameOver = true;
+    }
+
     // Update enemies and their firing
-    gameOver = updateEnemies(
+    const enemyCollisionGameOver = updateEnemies(
       enemies,
       player,
       playerNextX,
@@ -70,15 +84,19 @@ export function startGameLoop(
       enemyBullets,
       timestamp
     );
+    if (enemyCollisionGameOver) {
+      gameOver = true;
+    }
 
     // Update bullets (with obstacle collision)
     updateBullets(playerBullets, ctx.canvas, obstacles);
     updateBullets(enemyBullets, ctx.canvas, obstacles);
 
+    // Update position and HP info
     const positionInfo = document.getElementById("position-info")!;
     positionInfo.textContent = `Position: x: ${Math.round(
       player.x
-    )}, y: ${Math.round(player.y)}`;
+    )}, y: ${Math.round(player.y)} | HP: ${player.hp}`;
 
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);

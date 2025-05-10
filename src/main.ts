@@ -51,6 +51,7 @@ function initApp() {
       if (e.key === "Escape") {
         if (stopGame) {
           stopGame();
+          onGameOver();
         }
       }
     });

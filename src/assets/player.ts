@@ -18,6 +18,7 @@ export function createPlayer(): {
       lastFired: 0,
       speed: 7,
     },
+    hp: 10,
   };
 
   const camera = {

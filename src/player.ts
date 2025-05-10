@@ -35,13 +35,11 @@ export function updatePlayer(
   obstacles: Obstacle[],
   canvas: HTMLCanvasElement
 ): { playerNextX: number; playerNextY: number } {
-  // Update camera position to follow the player
   camera.x = player.x - camera.width / 2;
   camera.y = player.y - camera.height / 2;
   camera.x = Math.max(0, Math.min(canvas.width - camera.width, camera.x));
   camera.y = Math.max(0, Math.min(canvas.height - camera.height, camera.y));
 
-  // Calculate movement direction based on keys
   let dx = 0;
   let dy = 0;
   if (keys.w) dy -= player.speed;
@@ -49,14 +47,12 @@ export function updatePlayer(
   if (keys.a) dx -= player.speed;
   if (keys.d) dx += player.speed;
 
-  // Normalize diagonal movement
   if (dx !== 0 && dy !== 0) {
     const length = Math.sqrt(dx * dx + dy * dy);
     dx = (dx / length) * player.speed;
     dy = (dy / length) * player.speed;
   }
 
-  // Check collisions with obstacles
   const { dx: adjustedDx, dy: adjustedDy } = checkCollision(
     player,
     obstacles,
@@ -66,11 +62,9 @@ export function updatePlayer(
   const playerNextX = player.x + adjustedDx;
   const playerNextY = player.y + adjustedDy;
 
-  // Update player position
   player.x = playerNextX;
   player.y = playerNextY;
 
-  // Keep player within canvas bounds
   player.x = Math.max(
     player.radius,
     Math.min(canvas.width - player.radius, player.x)
@@ -102,4 +96,54 @@ export function firePlayerBullets(
     playerBullets.push(...newBullets);
     player.firingPattern.lastFired = timestamp;
   }
+}
+
+// Check for collisions between enemy bullets and the player
+export function checkBulletCollisionsWithPlayer(
+  player: Player,
+  enemyBullets: Bullet[]
+): boolean {
+  let gameOver = false;
+
+  for (let i = enemyBullets.length - 1; i >= 0; i--) {
+    const bullet = enemyBullets[i];
+    const dx = bullet.x - player.x;
+    const dy = bullet.y - player.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const combinedRadius = bullet.radius + player.radius;
+
+    if (distance < combinedRadius) {
+      // Bullet hits the player
+      player.hp -= 1; // Decrease player HP by 1
+      enemyBullets.splice(i, 1); // Remove the bullet
+      if (player.hp <= 0) {
+        gameOver = true; // End the game if HP reaches 0
+        break;
+      }
+    }
+  }
+
+  return gameOver;
+}
+
+// Draw the player's health bar above the player's dot
+export function drawHealthBar(ctx: CanvasRenderingContext2D, player: Player) {
+  const maxHP = 10; // Initial HP of the player
+  const barWidth = 40; // Width of the health bar (adjusted to fit above player)
+  const barHeight = 5; // Height of the health bar
+  const barX = player.x - barWidth / 2; // Center the bar above the player
+  const barY = player.y - player.radius - 10; // Position above the player
+
+  ctx.fillStyle = "gray"; // Background (missing HP)
+  ctx.fillRect(barX, barY, barWidth, barHeight);
+
+  // Draw foreground (current HP)
+  const currentWidth = (player.hp / maxHP) * barWidth;
+  ctx.fillStyle = "green";
+  ctx.fillRect(barX, barY, currentWidth, barHeight);
+
+  // Draw border
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(barX, barY, barWidth, barHeight);
 }

@@ -14,7 +14,7 @@ export const obstacles: Obstacle[] = [
     x: 500,
     y: 500,
     radius: 30,
-    color: "green",
+    color: "gray",
   },
   {
     type: "rectangle",
