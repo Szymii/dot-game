@@ -25,6 +25,7 @@ import {
 } from "./player";
 import type { Bullet } from "./types/Bullet";
 import type { PowerUp } from "./types/PowerUp";
+import { generateEnemies } from "./assets/enemies";
 
 export async function startGameLoop(
   ctx: CanvasRenderingContext2D,
@@ -32,16 +33,23 @@ export async function startGameLoop(
   camera: Camera,
   keys: { [key: string]: boolean },
   obstacles: Obstacle[],
-  enemies: Enemy[],
   onGameOver: () => void
 ) {
   await preloadPowerUpIcons();
 
   let gameOver = false;
+  let gameWon = false;
   let animationFrameId: number | null = null;
   const playerBullets: Bullet[] = [];
   const enemyBullets: Bullet[] = [];
   const powerUps: PowerUp[] = [];
+
+  let enemies: Enemy[] = generateEnemies(
+    1,
+    ctx.canvas.width,
+    ctx.canvas.height
+  ); // Start with 1 enemy
+  let wave = 1; // Current wave (starts with 1 enemy)
 
   const mapWidth = ctx.canvas.width;
   const mapHeight = ctx.canvas.height;
@@ -106,10 +114,16 @@ export async function startGameLoop(
       timestamp
     );
 
-    // Check for power-up collisions with the player
-    checkPowerUpCollisions(player, powerUps);
+    if (enemies.length === 0 && !gameOver) {
+      wave++;
+      if (wave > 4) {
+        gameWon = true;
+        return;
+      }
+      enemies = generateEnemies(wave, ctx.canvas.width, ctx.canvas.height);
+    }
 
-    // Remove expired power-ups
+    checkPowerUpCollisions(player, powerUps);
     removeExpiredPowerUps(powerUps, timestamp);
 
     updateBullets(playerBullets, ctx.canvas, obstacles);

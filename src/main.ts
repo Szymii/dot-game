@@ -3,7 +3,6 @@ import { createCanvas } from "./canvas";
 import { createControlPanel } from "./controlPanel";
 import { startGameLoop } from "./gameLoop";
 import { obstacles } from "./assets/obstacles";
-import { enemies } from "./assets/enemies";
 import { createPlayer } from "./assets/player";
 
 function initApp() {
@@ -32,21 +31,17 @@ function initApp() {
       restartButton.style.transform = "translateX(-50%)";
     }
 
-    // Start the game loop
     const stopGame = await startGameLoop(
       ctx,
       player,
       camera,
       controlPanel.keys,
       obstacles,
-      enemies,
       onGameOver
     );
 
-    // Add event listener for the reset button
     restartButton.addEventListener("click", resetGame);
 
-    // Optional: Stop the game on Escape (for debugging)
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         if (stopGame) {
