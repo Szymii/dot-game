@@ -3,6 +3,7 @@ import { createCanvas } from "./canvas";
 import { createPlayer } from "./player";
 import { createControlPanel } from "./controlPanel";
 import { startGameLoop } from "./gameLoop";
+import { obstacles } from "./assets/obstacles";
 
 function initApp() {
   const app = document.getElementById("app")!;
@@ -17,7 +18,7 @@ function initApp() {
     const { player, camera } = createPlayer(canvas);
     const controlPanel = createControlPanel(app, player);
 
-    startGameLoop(ctx, player, camera, controlPanel.keys);
+    startGameLoop(ctx, player, camera, controlPanel.keys, obstacles);
   });
 }
 

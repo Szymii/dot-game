@@ -1,10 +1,15 @@
-import { type Player, type Camera, drawPlayer } from "./player";
+import { drawPlayer } from "./player";
+import { drawObstacles, checkCollision } from "./obstacles";
+import type { Obstacle } from "./types/Obstacle";
+import type { Player } from "./types/Player";
+import type { Camera } from "./types/Camera";
 
 export function startGameLoop(
   ctx: CanvasRenderingContext2D,
   player: Player,
   camera: Camera,
-  keys: { [key: string]: boolean }
+  keys: { [key: string]: boolean },
+  obstacles: Obstacle[]
 ) {
   function gameLoop() {
     // Update camera to follow player
@@ -31,9 +36,17 @@ export function startGameLoop(
       dy = (dy / length) * player.speed;
     }
 
+    // Check collisions with obstacles
+    const { dx: adjustedDx, dy: adjustedDy } = checkCollision(
+      player,
+      obstacles,
+      dx,
+      dy
+    );
+
     // Update player position
-    player.x += dx;
-    player.y += dy;
+    player.x += adjustedDx;
+    player.y += adjustedDy;
 
     // Keep player within canvas bounds
     player.x = Math.max(
@@ -51,12 +64,15 @@ export function startGameLoop(
       player.x
     )}, y: ${Math.round(player.y)}`;
 
-    // Clear only the visible area
+    // Clear the visible area
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
     ctx.fillStyle = "black";
     ctx.fillRect(camera.x, camera.y, camera.width, camera.height);
     ctx.restore();
+
+    // Draw obstacles
+    drawObstacles(ctx, obstacles, camera.x, camera.y);
 
     // Draw player
     drawPlayer(ctx, player, camera);

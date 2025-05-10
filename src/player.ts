@@ -1,17 +1,5 @@
-export interface Player {
-  x: number;
-  y: number;
-  radius: number;
-  speed: number;
-  color: string;
-}
-
-export interface Camera {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+import type { Camera } from "./types/Camera";
+import type { Player } from "./types/Player";
 
 export function createPlayer(canvas: HTMLCanvasElement): {
   player: Player;
