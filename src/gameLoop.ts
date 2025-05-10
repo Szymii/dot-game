@@ -47,9 +47,12 @@ export async function startGameLoop(
   let enemies: Enemy[] = generateEnemies(
     1,
     ctx.canvas.width,
-    ctx.canvas.height
-  ); // Start with 1 enemy
-  let wave = 1; // Current wave (starts with 1 enemy)
+    ctx.canvas.height,
+    player,
+    obstacles
+  );
+
+  let wave = 1;
 
   const mapWidth = ctx.canvas.width;
   const mapHeight = ctx.canvas.height;
@@ -120,7 +123,13 @@ export async function startGameLoop(
         gameWon = true;
         return;
       }
-      enemies = generateEnemies(wave, ctx.canvas.width, ctx.canvas.height);
+      enemies = generateEnemies(
+        wave,
+        ctx.canvas.width,
+        ctx.canvas.height,
+        player,
+        obstacles
+      );
     }
 
     checkPowerUpCollisions(player, powerUps);
