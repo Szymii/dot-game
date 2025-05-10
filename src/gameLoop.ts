@@ -4,7 +4,7 @@ import {
   updateEnemies,
   checkBulletCollisionsWithEnemies,
 } from "./enemy";
-import { drawMapBounds } from "./map";
+import { drawMapBounds, drawGameEndScreen } from "./map";
 import { updateBullets, drawBullets } from "./bullets";
 import {
   drawPowerUps,
@@ -16,6 +16,9 @@ import type { Camera } from "./types/Camera";
 import type { Player } from "./types/Player";
 import type { Obstacle } from "./types/Obstacle";
 import type { Enemy } from "./types/Enemy";
+import type { Bullet } from "./types/Bullet";
+import type { PowerUp } from "./types/PowerUp";
+import { generateEnemies } from "./assets/enemies";
 import {
   drawPlayer,
   updatePlayer,
@@ -23,9 +26,18 @@ import {
   checkBulletCollisionsWithPlayer,
   drawHealthBar,
 } from "./player";
-import type { Bullet } from "./types/Bullet";
-import type { PowerUp } from "./types/PowerUp";
-import { generateEnemies } from "./assets/enemies";
+
+function updatePositionInfo(player: Player) {
+  const positionInfo = document.getElementById("position-info")!;
+  positionInfo.textContent = `Position: x: ${Math.round(
+    player.x
+  )}, y: ${Math.round(player.y)} | HP: ${player.hp}`;
+}
+
+function clearCanvas(ctx: CanvasRenderingContext2D) {
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+}
 
 export async function startGameLoop(
   ctx: CanvasRenderingContext2D,
@@ -38,7 +50,6 @@ export async function startGameLoop(
   await preloadPowerUpIcons();
 
   let gameOver = false;
-  let gameWon = false;
   let animationFrameId: number | null = null;
   const playerBullets: Bullet[] = [];
   const enemyBullets: Bullet[] = [];
@@ -59,21 +70,7 @@ export async function startGameLoop(
 
   function gameLoop(timestamp: number = 0) {
     if (gameOver) {
-      ctx.save();
-      ctx.translate(-camera.x, -camera.y);
-      ctx.fillStyle = "black";
-      ctx.fillRect(camera.x, camera.y, camera.width, camera.height);
-      ctx.font = "48px Arial";
-      ctx.fillStyle = "red";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(
-        "You died",
-        camera.x + camera.width / 2,
-        camera.y + camera.height / 2
-      );
-      ctx.restore();
-
+      drawGameEndScreen(ctx, camera, gameOver);
       onGameOver();
       return;
     }
@@ -120,7 +117,8 @@ export async function startGameLoop(
     if (enemies.length === 0 && !gameOver) {
       wave++;
       if (wave > 4) {
-        gameWon = true;
+        drawGameEndScreen(ctx, camera, gameOver);
+        onGameOver();
         return;
       }
       enemies = generateEnemies(
@@ -138,15 +136,11 @@ export async function startGameLoop(
     updateBullets(playerBullets, ctx.canvas, obstacles);
     updateBullets(enemyBullets, ctx.canvas, obstacles);
 
-    const positionInfo = document.getElementById("position-info")!;
-    positionInfo.textContent = `Position: x: ${Math.round(
-      player.x
-    )}, y: ${Math.round(player.y)} | HP: ${player.hp}`;
+    updatePositionInfo(player);
 
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    clearCanvas(ctx);
 
-    drawMapBounds(ctx, mapWidth, mapHeight, camera.x, camera.y);
+    drawMapBounds(ctx, mapWidth, mapHeight, camera.x, camera.y, wave);
     drawBullets(ctx, playerBullets, camera.x, camera.y);
     drawBullets(ctx, enemyBullets, camera.x, camera.y);
     drawObstacles(ctx, obstacles, camera.x, camera.y);
