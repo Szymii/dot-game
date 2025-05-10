@@ -1,8 +1,9 @@
+import { fireBullets } from "./bullets";
+import type { Bullet } from "./types/Bullet";
 import type { Enemy } from "./types/Enemy";
 import type { Obstacle } from "./types/Obstacle";
 import type { Player } from "./types/Player";
 
-// Draw enemies (translated by camera)
 export function drawEnemies(
   ctx: CanvasRenderingContext2D,
   enemies: Enemy[],
@@ -23,30 +24,42 @@ export function drawEnemies(
   ctx.restore();
 }
 
-// Update enemy positions and handle collisions
 export function updateEnemies(
   enemies: Enemy[],
   player: Player,
   playerNextX: number,
   playerNextY: number,
   obstacles: Obstacle[],
-  canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement,
+  enemyBullets: Bullet[],
+  timestamp: number
 ): boolean {
   let gameOver = false;
 
   enemies.forEach((enemy, index) => {
-    // Normalize velocity to ensure consistent speed
     const speedMagnitude = Math.sqrt(enemy.vx * enemy.vx + enemy.vy * enemy.vy);
     if (speedMagnitude !== 0) {
       enemy.vx = (enemy.vx / speedMagnitude) * enemy.speed;
       enemy.vy = (enemy.vy / speedMagnitude) * enemy.speed;
     }
 
-    // Store proposed position
+    // Enemy firing logic
+    const timeSinceLastShot = timestamp - enemy.firingPattern.lastFired;
+    const shotInterval = 1000 / enemy.firingPattern.fireRate;
+    if (timeSinceLastShot >= shotInterval) {
+      const newBullets = fireBullets(
+        enemy.x,
+        enemy.y,
+        enemy.firingPattern.bulletCount,
+        enemy.firingPattern.initialAngle
+      );
+      enemyBullets.push(...newBullets);
+      enemy.firingPattern.lastFired = timestamp;
+    }
+
     let nextX = enemy.x + enemy.vx;
     let nextY = enemy.y + enemy.vy;
 
-    // Collision with canvas bounds
     if (nextX - enemy.radius < 0 || nextX + enemy.radius > canvas.width) {
       enemy.vx = -enemy.vx;
       nextX = enemy.x + enemy.vx;
@@ -56,7 +69,6 @@ export function updateEnemies(
       nextY = enemy.y + enemy.vy;
     }
 
-    // Collision with obstacles
     obstacles.forEach((obstacle) => {
       if (obstacle.type === "rectangle") {
         const closestX = Math.max(
@@ -125,16 +137,14 @@ export function updateEnemies(
       }
     });
 
-    // Collision with player (using player’s new position)
     const dx = nextX - playerNextX;
     const dy = nextY - playerNextY;
     const distance = Math.sqrt(dx * dx + dy * dy);
     if (distance < enemy.radius + player.radius) {
-      gameOver = true; // Signal to stop the game
-      return; // Stop updating enemies
+      gameOver = true;
+      return;
     }
 
-    // Collision with other enemies
     for (let i = 0; i < enemies.length; i++) {
       if (i === index) continue;
       const otherEnemy = enemies[i];
@@ -175,7 +185,6 @@ export function updateEnemies(
       }
     }
 
-    // Update position
     enemy.x = nextX;
     enemy.y = nextY;
   });

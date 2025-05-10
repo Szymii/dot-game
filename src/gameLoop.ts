@@ -1,11 +1,13 @@
 import { drawObstacles, checkCollision } from "./obstacles";
 import { drawEnemies, updateEnemies } from "./enemy";
 import { drawMapBounds } from "./map";
+import { fireBullets, updateBullets, drawBullets } from "./bullets";
 import type { Camera } from "./types/Camera";
 import type { Player } from "./types/Player";
 import type { Obstacle } from "./types/Obstacle";
 import type { Enemy } from "./types/Enemy";
 import { drawPlayer } from "./player";
+import type { Bullet } from "./types/Bullet";
 
 export function startGameLoop(
   ctx: CanvasRenderingContext2D,
@@ -18,11 +20,13 @@ export function startGameLoop(
 ) {
   let gameOver = false;
   let animationFrameId: number | null = null;
+  const playerBullets: Bullet[] = [];
+  const enemyBullets: Bullet[] = [];
 
   const mapWidth = ctx.canvas.width;
   const mapHeight = ctx.canvas.height;
 
-  function gameLoop() {
+  function gameLoop(timestamp: number = 0) {
     if (gameOver) {
       ctx.save();
       ctx.translate(-camera.x, -camera.y);
@@ -84,26 +88,47 @@ export function startGameLoop(
       Math.min(canvas.height - player.radius, player.y)
     );
 
+    // Player firing logic
+    const timeSinceLastShot = timestamp - player.firingPattern.lastFired;
+    const shotInterval = 1000 / player.firingPattern.fireRate;
+    if (timeSinceLastShot >= shotInterval) {
+      const newBullets = fireBullets(
+        player.x,
+        player.y,
+        player.firingPattern.bulletCount,
+        player.firingPattern.initialAngle
+      );
+      playerBullets.push(...newBullets);
+      player.firingPattern.lastFired = timestamp;
+    }
+
+    // Update enemies and their firing
     gameOver = updateEnemies(
       enemies,
       player,
       playerNextX,
       playerNextY,
       obstacles,
-      canvas
+      canvas,
+      enemyBullets,
+      timestamp
     );
+
+    // Update bullets
+    updateBullets(playerBullets, canvas);
+    updateBullets(enemyBullets, canvas);
 
     const positionInfo = document.getElementById("position-info")!;
     positionInfo.textContent = `Position: x: ${Math.round(
       player.x
     )}, y: ${Math.round(player.y)}`;
 
-    // Clear the entire canvas (not just the camera view)
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw the map bounds (before drawing other elements)
     drawMapBounds(ctx, mapWidth, mapHeight, camera.x, camera.y);
+    drawBullets(ctx, playerBullets, camera.x, camera.y);
+    drawBullets(ctx, enemyBullets, camera.x, camera.y);
     drawObstacles(ctx, obstacles, camera.x, camera.y);
     drawEnemies(ctx, enemies, camera.x, camera.y);
     drawPlayer(ctx, player, camera);

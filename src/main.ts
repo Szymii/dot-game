@@ -1,10 +1,10 @@
 import "./style.css";
 import { createCanvas } from "./canvas";
-import { createPlayer } from "./player";
 import { createControlPanel } from "./controlPanel";
 import { startGameLoop } from "./gameLoop";
 import { obstacles } from "./assets/obstacles";
 import { enemies } from "./assets/enemies";
+import { createPlayer } from "./assets/player";
 
 function initApp() {
   const app = document.getElementById("app")!;
@@ -17,7 +17,7 @@ function initApp() {
 
     const canvas = createCanvas(app);
     const ctx = canvas.getContext("2d")!;
-    const { player, camera } = createPlayer(canvas);
+    const { player, camera } = createPlayer();
     const controlPanel = createControlPanel(app, player);
 
     function resetGame() {

@@ -1,9 +1,12 @@
+import type { FiringPattern } from "./FiringPattern";
+
 export interface Enemy {
   x: number;
   y: number;
   radius: number;
-  vx: number; // Velocity x (for bouncing)
-  vy: number; // Velocity y (for bouncing)
+  vx: number;
+  vy: number;
   speed: number;
   color: string;
+  firingPattern: FiringPattern;
 }
