@@ -4,6 +4,7 @@ import { createPlayer } from "./player";
 import { createControlPanel } from "./controlPanel";
 import { startGameLoop } from "./gameLoop";
 import { obstacles } from "./assets/obstacles";
+import { enemies } from "./assets/enemies";
 
 function initApp() {
   const app = document.getElementById("app")!;
@@ -18,7 +19,20 @@ function initApp() {
     const { player, camera } = createPlayer(canvas);
     const controlPanel = createControlPanel(app, player);
 
-    startGameLoop(ctx, player, camera, controlPanel.keys, obstacles);
+    const stopGame = startGameLoop(
+      ctx,
+      player,
+      camera,
+      controlPanel.keys,
+      obstacles,
+      enemies
+    );
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        stopGame();
+      }
+    });
   });
 }
 
