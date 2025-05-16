@@ -2,11 +2,7 @@ import { drawObstacles } from "./obstacles";
 
 import { drawMap, drawGameEndScreen } from "./map";
 import { updateBullets, drawBullets } from "./bullets";
-import {
-  drawPowerUps,
-  checkPowerUpCollisions,
-  removeExpiredPowerUps,
-} from "./powerups";
+import { drawPowerUps, checkPowerUpCollisions } from "./powerups";
 import {
   drawPlayer,
   updatePlayer,
@@ -16,12 +12,13 @@ import {
 } from "./player";
 import { clearCanvas } from "./canvas";
 import { gameState } from "./state/gameState";
-import { generateEnemies } from "./enemy/generateEnemies";
 import {
   checkBulletCollisionsWithEnemies,
   drawEnemies,
   updateEnemies,
 } from "./enemy";
+import { drawCountdown, initWaveManager } from "./waveManager";
+import { gameEvents } from "./events/EventEmitter";
 
 function updatePositionInfo() {
   const positionInfo = document.getElementById("position-info")!;
@@ -38,13 +35,7 @@ export async function startGameLoop(
 ) {
   let animationFrameId: number | null = null;
 
-  gameState.enemies = generateEnemies(
-    gameState.wave + 1,
-    ctx.canvas.width,
-    ctx.canvas.height,
-    gameState.player,
-    gameState.obstacles
-  );
+  initWaveManager(ctx);
 
   function gameLoop(timestamp: number = 0) {
     if (gameState.gameOver) {
@@ -94,16 +85,12 @@ export async function startGameLoop(
       timestamp
     );
 
-    if (gameState.enemies.length === 0 && !gameState.gameOver) {
-      gameState.wave++;
-
-      gameState.enemies = generateEnemies(
-        gameState.wave + 1,
-        ctx.canvas.width,
-        ctx.canvas.height,
-        gameState.player,
-        gameState.obstacles
-      );
+    if (
+      gameState.enemies.length === 0 &&
+      !gameState.gameOver &&
+      !gameState.waveEnding
+    ) {
+      gameEvents.emit("waveCleared", timestamp);
     }
 
     clearCanvas(ctx);
@@ -132,7 +119,6 @@ export async function startGameLoop(
       gameState.camera.y
     );
     checkPowerUpCollisions(gameState.player, gameState.powerUps);
-    removeExpiredPowerUps(gameState.powerUps, timestamp);
 
     drawObstacles(
       ctx,
@@ -142,10 +128,14 @@ export async function startGameLoop(
     );
     drawMap(ctx, gameState.camera.x, gameState.camera.y, gameState.wave);
 
+    drawCountdown(ctx, timestamp);
+
     updateBullets(gameState.enemyBullets, ctx.canvas, gameState.obstacles);
     updateBullets(gameState.playerBullets, ctx.canvas, gameState.obstacles);
 
     updatePositionInfo();
+
+    gameEvents.emit("update", timestamp);
 
     animationFrameId = requestAnimationFrame(gameLoop);
   }

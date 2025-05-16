@@ -78,16 +78,3 @@ export function checkPowerUpCollisions(
     }
   }
 }
-
-export function removeExpiredPowerUps(
-  powerUps: PowerUp[],
-  currentTime: number
-): void {
-  const lifetime = 12000; // 10 seconds in milliseconds
-  for (let i = powerUps.length - 1; i >= 0; i--) {
-    const powerUp = powerUps[i];
-    if (currentTime - powerUp.spawnTime > lifetime) {
-      powerUps.splice(i, 1);
-    }
-  }
-}

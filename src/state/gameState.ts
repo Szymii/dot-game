@@ -16,6 +16,7 @@ interface GameState {
   wave: number;
   gameOver: boolean;
   keys: { [key: string]: boolean };
+  waveEnding: number | null;
 }
 
 export const gameState: GameState = {
@@ -29,17 +30,5 @@ export const gameState: GameState = {
   wave: 1,
   gameOver: false,
   keys: {},
+  waveEnding: null,
 };
-
-export function resetGameState() {
-  gameState.player = null!;
-  gameState.camera = null!;
-  gameState.obstacles = [];
-  gameState.enemies = [];
-  gameState.playerBullets = [];
-  gameState.enemyBullets = [];
-  gameState.powerUps = [];
-  gameState.wave = 1;
-  gameState.gameOver = false;
-  gameState.keys = {};
-}

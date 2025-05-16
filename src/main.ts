@@ -5,10 +5,9 @@ import { startGameLoop } from "./gameLoop";
 import { preloadIcons } from "./utils/preloadAssets";
 import { createPlayer } from "./state/player";
 import { obstacles } from "./state/obstacles";
-import { gameState, resetGameState } from "./state/gameState";
+import { gameState } from "./state/gameState";
 
 function resetGame() {
-  resetGameState();
   window.location.reload();
 }
 
