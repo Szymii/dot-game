@@ -1,25 +1,22 @@
+import { GLOBALS } from "./assets/GLOBALS";
+
 export function createCanvas(app: HTMLElement): HTMLCanvasElement {
+  app.className =
+    "overflow-hidden bg-[url('/dot-game/space-bg.jpg')] bg-cover bg-center";
+
   const canvas = document.createElement("canvas");
   canvas.id = "gameCanvas";
   app.appendChild(canvas);
 
   const ctx = canvas.getContext("2d")!;
-  // Set canvas to a fixed size larger than the screen
-  canvas.width = 1200;
-  canvas.height = 1200;
+  canvas.width = GLOBALS.canvasW;
+  canvas.height = GLOBALS.canvasH;
 
-  // Initial clear
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Prevent scrollbars by ensuring body and html have no overflow
-  document.body.style.overflow = "hidden";
-  document.documentElement.style.overflow = "hidden";
-
-  // Handle window resize to adjust rendering (not canvas size)
-  window.addEventListener("resize", () => {
-    // Redraw canvas (handled in gameLoop via camera)
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  });
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   return canvas;
+}
+
+export function clearCanvas(ctx: CanvasRenderingContext2D) {
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }

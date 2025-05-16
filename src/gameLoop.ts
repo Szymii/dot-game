@@ -10,7 +10,6 @@ import {
   drawPowerUps,
   checkPowerUpCollisions,
   removeExpiredPowerUps,
-  preloadPowerUpIcons,
 } from "./powerups";
 import type { Camera } from "./types/Camera";
 import type { Player } from "./types/Player";
@@ -26,6 +25,7 @@ import {
   checkBulletCollisionsWithPlayer,
   drawHealthBar,
 } from "./player";
+import { clearCanvas } from "./canvas";
 
 function updatePositionInfo(player: Player) {
   const positionInfo = document.getElementById("position-info")!;
@@ -36,11 +36,6 @@ function updatePositionInfo(player: Player) {
   )}, y: ${Math.round(player.y)} | HP: ${player.hp}`;
 }
 
-function clearCanvas(ctx: CanvasRenderingContext2D) {
-  ctx.fillStyle = "black";
-  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-}
-
 export async function startGameLoop(
   ctx: CanvasRenderingContext2D,
   player: Player,
@@ -49,8 +44,6 @@ export async function startGameLoop(
   obstacles: Obstacle[],
   onGameOver: () => void
 ) {
-  await preloadPowerUpIcons();
-
   let gameOver = false;
   let animationFrameId: number | null = null;
   const playerBullets: Bullet[] = [];
@@ -105,6 +98,7 @@ export async function startGameLoop(
       enemyBullets,
       timestamp
     );
+
     if (enemyCollisionGameOver) {
       gameOver = true;
     }
@@ -132,24 +126,26 @@ export async function startGameLoop(
       );
     }
 
+    clearCanvas(ctx);
+
+    drawPlayer(ctx, player, camera);
+    drawBullets(ctx, playerBullets, camera.x, camera.y);
+    drawHealthBar(ctx, player);
+
+    drawEnemies(ctx, enemies, camera.x, camera.y);
+    drawBullets(ctx, enemyBullets, camera.x, camera.y);
+
+    drawPowerUps(ctx, powerUps, camera.x, camera.y);
     checkPowerUpCollisions(player, powerUps);
     removeExpiredPowerUps(powerUps, timestamp);
 
-    updateBullets(playerBullets, ctx.canvas, obstacles);
+    drawObstacles(ctx, obstacles, camera.x, camera.y);
+    drawMapBounds(ctx, mapWidth, mapHeight, camera.x, camera.y, wave);
+
     updateBullets(enemyBullets, ctx.canvas, obstacles);
+    updateBullets(playerBullets, ctx.canvas, obstacles);
 
     updatePositionInfo(player);
-
-    clearCanvas(ctx);
-
-    drawMapBounds(ctx, mapWidth, mapHeight, camera.x, camera.y, wave);
-    drawBullets(ctx, playerBullets, camera.x, camera.y);
-    drawBullets(ctx, enemyBullets, camera.x, camera.y);
-    drawObstacles(ctx, obstacles, camera.x, camera.y);
-    drawEnemies(ctx, enemies, camera.x, camera.y);
-    drawPlayer(ctx, player, camera);
-    drawPowerUps(ctx, powerUps, camera.x, camera.y);
-    drawHealthBar(ctx, player);
 
     animationFrameId = requestAnimationFrame(gameLoop);
   }

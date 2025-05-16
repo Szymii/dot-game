@@ -4,6 +4,7 @@ import { checkCollision } from "./obstacles";
 import type { Player } from "./types/Player";
 import type { Camera } from "./types/Camera";
 import type { Bullet } from "./types/Bullet";
+import { getBrightness } from "./utils/getBrightenss";
 
 export function drawPlayer(
   ctx: CanvasRenderingContext2D,
@@ -19,8 +20,11 @@ export function drawPlayer(
   ctx.fill();
   ctx.closePath();
 
-  ctx.font = "14px Arial";
-  ctx.fillStyle = "white";
+  const brightness = getBrightness(player.color);
+  const textColor = brightness > 150 ? "black" : "white";
+
+  ctx.font = "bold 14px Arial";
+  ctx.fillStyle = textColor;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText("You", player.x, player.y);
@@ -124,13 +128,13 @@ export function checkBulletCollisionsWithPlayer(
   return gameOver;
 }
 
-// Draw the player's health bar in the top-left corner of the camera view
 export function drawHealthBar(ctx: CanvasRenderingContext2D, player: Player) {
-  const maxHP = 10; // Initial HP of the player
+  const maxHP = player.maxHp;
   const barWidth = 200; // Larger width for better visibility
   const barHeight = 20; // Larger height for better visibility
-  const barX = 10; // Position in screen space (top-left corner)
-  const barY = 10;
+
+  const barX = 20; // Position in screen space (top-left corner)
+  const barY = 20;
 
   // Draw in screen space (no camera translation)
   ctx.fillStyle = "red";

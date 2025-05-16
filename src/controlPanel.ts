@@ -4,7 +4,7 @@ export function createControlPanel(app: HTMLElement, player: Player) {
   const controlPanel = document.createElement("div");
   controlPanel.id = "control-panel";
   controlPanel.className =
-    "absolute bottom-4 left-4 bg-gray-800 text-white p-4 rounded opacity-50";
+    "absolute bottom-8 left-8 bg-gray-800 text-white p-4 rounded opacity-50";
   controlPanel.innerHTML = `
     <p>Use W, A, S, D keys to move your avatar</p>
     <p id="position-info">Position: x: ${Math.round(player.x)}, y: ${Math.round(

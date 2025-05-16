@@ -1,16 +1,17 @@
 import type { Camera } from "../types/Camera";
 import type { Player } from "../types/Player";
+import { GLOBALS } from "./GLOBALS";
 
-export function createPlayer(): {
+export function createPlayer(app: HTMLElement): {
   player: Player;
   camera: Camera;
 } {
   const player: Player = {
-    x: 600,
-    y: 600,
+    x: GLOBALS.canvasW / 2,
+    y: GLOBALS.canvasH / 2,
     radius: 20,
     speed: 4,
-    color: "red",
+    color: "#f3e8ff",
     firingPattern: {
       bulletCount: 4,
       initialAngle: 0,
@@ -19,13 +20,14 @@ export function createPlayer(): {
       speed: 8,
     },
     hp: 10,
+    maxHp: 10,
   };
 
   const camera = {
-    x: player.x - window.innerWidth / 2,
-    y: player.y - window.innerHeight / 2,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    x: player.x - app.offsetWidth / 2,
+    y: player.y - app.offsetHeight / 2,
+    width: app.offsetWidth,
+    height: app.offsetHeight,
   };
 
   return { player, camera };

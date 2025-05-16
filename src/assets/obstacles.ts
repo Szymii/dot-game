@@ -1,27 +1,28 @@
 import type { Obstacle } from "../types/Obstacle";
+import { GLOBALS } from "./GLOBALS";
 
 export const obstacles: Obstacle[] = [
   {
     type: "rectangle",
-    x: 300,
-    y: 300,
-    width: 100,
-    height: 50,
-    color: "gray",
+    x: 250,
+    y: 250,
+    width: 60,
+    height: 500,
+    color: "#f4f4f5",
   },
   {
     type: "circle",
-    x: 500,
-    y: 500,
-    radius: 30,
-    color: "gray",
+    x: GLOBALS.canvasW / 2 - 200,
+    y: GLOBALS.canvasH / 2,
+    radius: 100,
+    color: "#fef9c3",
   },
   {
     type: "rectangle",
-    x: 800,
-    y: 700,
-    width: 150,
-    height: 60,
-    color: "gray",
+    x: GLOBALS.canvasW - 650,
+    y: GLOBALS.canvasH - 450,
+    width: 450,
+    height: 250,
+    color: "#f4f4f5",
   },
 ];

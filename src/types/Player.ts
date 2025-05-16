@@ -8,4 +8,5 @@ export interface Player {
   color: string;
   firingPattern: FiringPattern;
   hp: number;
+  maxHp: number;
 }

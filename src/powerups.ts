@@ -1,38 +1,7 @@
+import { loadedIcons } from "./assets/preloadAssets";
 import type { Player } from "./types/Player";
 import type { PowerUp } from "./types/PowerUp";
 
-// Map of power-up types to their corresponding icon URLs
-const powerUpIcons: Record<string, string> = {
-  extraBullet: "/dot-game/extraBullet.svg",
-  fasterFireRate: "/dot-game/fasterFireRate.svg",
-  fasterBullets: "/dot-game/fasterBullets.svg",
-};
-
-// Object to store loaded images
-const loadedIcons: Record<string, HTMLImageElement> = {};
-
-// Function to preload power-up icons
-export async function preloadPowerUpIcons(): Promise<void> {
-  const loadPromises = Object.entries(powerUpIcons).map(([type, src]) => {
-    return new Promise<void>((resolve, reject) => {
-      const img = new Image();
-      img.src = src;
-      img.onload = () => {
-        loadedIcons[type] = img;
-        resolve();
-      };
-      img.onerror = () => {
-        console.error(`Failed to load power-up icon: ${src}`);
-        reject();
-      };
-    });
-  });
-
-  await Promise.all(loadPromises);
-  console.log("All power-up icons loaded successfully");
-}
-
-// Draw power-ups on the canvas
 export function drawPowerUps(
   ctx: CanvasRenderingContext2D,
   powerUps: PowerUp[],
@@ -45,9 +14,20 @@ export function drawPowerUps(
   powerUps.forEach((powerUp) => {
     const icon = loadedIcons[powerUp.type];
     if (icon) {
-      // Draw the icon centered at the power-up's position
       const iconWidth = powerUp.width;
       const iconHeight = powerUp.height;
+
+      ctx.beginPath();
+      ctx.arc(
+        powerUp.x,
+        powerUp.y,
+        Math.max(iconWidth, iconHeight) / 2 + 5,
+        0,
+        Math.PI * 2
+      );
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+      ctx.fill();
+      ctx.closePath();
 
       ctx.drawImage(
         icon,
@@ -61,7 +41,7 @@ export function drawPowerUps(
 
   ctx.restore();
 }
-// Check for collisions between the player and power-ups
+
 export function checkPowerUpCollisions(
   player: Player,
   powerUps: PowerUp[]
@@ -99,7 +79,6 @@ export function checkPowerUpCollisions(
   }
 }
 
-// Remove power-ups that have expired (after 10 seconds)
 export function removeExpiredPowerUps(
   powerUps: PowerUp[],
   currentTime: number

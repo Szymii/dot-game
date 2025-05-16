@@ -9,12 +9,13 @@ export function drawMapBounds(
   cameraY: number,
   wave: number
 ) {
+  const app = document.getElementById("app")!;
   ctx.save();
   ctx.translate(-cameraX, -cameraY);
 
   // Draw map bounds
   ctx.strokeStyle = "white";
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.strokeRect(0, 0, mapWidth, mapHeight);
 
   ctx.restore();
@@ -27,8 +28,7 @@ export function drawMapBounds(
   ctx.lineWidth = 2;
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  ctx.strokeText(`Wave: ${wave}`, ctx.canvas.width / 2, 10); // Draw outline
-  ctx.fillText(`Wave: ${wave}`, ctx.canvas.width / 2, 10); // Draw text
+  ctx.fillText(`Wave: ${wave}`, app.offsetWidth - 60, 20); // Draw text
   ctx.restore();
 }
 
