@@ -2,11 +2,13 @@ import "./style.css";
 import { createCanvas } from "./canvas";
 import { createControlPanel } from "./controlPanel";
 import { startGameLoop } from "./gameLoop";
-import { createPlayer } from "./defaults/player";
-import { obstacles } from "./defaults/obstacles";
 import { preloadIcons } from "./utils/preloadAssets";
+import { createPlayer } from "./state/player";
+import { obstacles } from "./state/obstacles";
+import { gameState, resetGameState } from "./state/gameState";
 
 function resetGame() {
+  resetGameState();
   window.location.reload();
 }
 
@@ -32,16 +34,14 @@ function initApp() {
     const ctx = canvas.getContext("2d")!;
 
     const { player, camera } = createPlayer(app);
-    const controlPanel = createControlPanel(app, player);
+    gameState.player = player;
+    gameState.camera = camera;
+    gameState.obstacles = obstacles;
 
-    const stopGame = await startGameLoop(
-      ctx,
-      player,
-      camera,
-      controlPanel.keys,
-      obstacles,
-      onGameOver
-    );
+    const controlPanel = createControlPanel(app, player);
+    gameState.keys = controlPanel.keys;
+
+    const stopGame = await startGameLoop(ctx, onGameOver);
 
     restartButton.addEventListener("click", resetGame);
 

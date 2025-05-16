@@ -1,9 +1,5 @@
 import { drawObstacles } from "./obstacles";
-import {
-  drawEnemies,
-  updateEnemies,
-  checkBulletCollisionsWithEnemies,
-} from "./enemy";
+
 import { drawMap, drawGameEndScreen } from "./map";
 import { updateBullets, drawBullets } from "./bullets";
 import {
@@ -11,12 +7,6 @@ import {
   checkPowerUpCollisions,
   removeExpiredPowerUps,
 } from "./powerups";
-import type { Camera } from "./types/Camera";
-import type { Player } from "./types/Player";
-import type { Obstacle } from "./types/Obstacle";
-import type { Enemy } from "./types/Enemy";
-import type { Bullet } from "./types/Bullet";
-import type { PowerUp } from "./types/PowerUp";
 import {
   drawPlayer,
   updatePlayer,
@@ -25,121 +15,137 @@ import {
   drawHealthBar,
 } from "./player";
 import { clearCanvas } from "./canvas";
-import { generateEnemies } from "./defaults/enemies";
+import { gameState } from "./state/gameState";
+import { generateEnemies } from "./enemy/generateEnemies";
+import {
+  checkBulletCollisionsWithEnemies,
+  drawEnemies,
+  updateEnemies,
+} from "./enemy";
 
-function updatePositionInfo(player: Player) {
+function updatePositionInfo() {
   const positionInfo = document.getElementById("position-info")!;
   if (!positionInfo) return;
 
   positionInfo.textContent = `Position: x: ${Math.round(
-    player.x
-  )}, y: ${Math.round(player.y)} | HP: ${player.hp}`;
+    gameState.player.x
+  )}, y: ${Math.round(gameState.player.y)} | HP: ${gameState.player.hp}`;
 }
 
 export async function startGameLoop(
   ctx: CanvasRenderingContext2D,
-  player: Player,
-  camera: Camera,
-  keys: { [key: string]: boolean },
-  obstacles: Obstacle[],
   onGameOver: () => void
 ) {
   let animationFrameId: number | null = null;
 
-  let wave = 1;
-  let gameOver = false;
-  const playerBullets: Bullet[] = [];
-  const enemyBullets: Bullet[] = [];
-  const powerUps: PowerUp[] = [];
-
-  let enemies: Enemy[] = generateEnemies(
-    2,
+  gameState.enemies = generateEnemies(
+    gameState.wave + 1,
     ctx.canvas.width,
     ctx.canvas.height,
-    player,
-    obstacles
+    gameState.player,
+    gameState.obstacles
   );
 
   function gameLoop(timestamp: number = 0) {
-    if (gameOver) {
-      drawGameEndScreen(ctx, camera, gameOver);
+    if (gameState.gameOver) {
+      drawGameEndScreen(ctx, gameState.camera, gameState.gameOver);
       onGameOver();
       return;
     }
 
     const bulletCollisionGameOver = checkBulletCollisionsWithPlayer(
-      player,
-      enemyBullets
+      gameState.player,
+      gameState.enemyBullets
     );
 
     if (bulletCollisionGameOver) {
-      gameOver = true;
+      gameState.gameOver = true;
     }
 
     const { playerNextX, playerNextY } = updatePlayer(
-      player,
-      camera,
-      keys,
-      obstacles,
+      gameState.player,
+      gameState.camera,
+      gameState.keys,
+      gameState.obstacles,
       ctx.canvas
     );
 
-    firePlayerBullets(player, timestamp, playerBullets);
+    firePlayerBullets(gameState.player, timestamp, gameState.playerBullets);
 
     const enemyCollisionGameOver = updateEnemies(
-      enemies,
-      player,
+      gameState.enemies,
+      gameState.player,
       playerNextX,
       playerNextY,
-      obstacles,
+      gameState.obstacles,
       ctx.canvas,
-      enemyBullets,
+      gameState.enemyBullets,
       timestamp
     );
 
     if (enemyCollisionGameOver) {
-      gameOver = true;
+      gameState.gameOver = true;
     }
 
     checkBulletCollisionsWithEnemies(
-      enemies,
-      playerBullets,
-      powerUps,
+      gameState.enemies,
+      gameState.playerBullets,
+      gameState.powerUps,
       timestamp
     );
 
-    if (enemies.length === 0 && !gameOver) {
-      wave++;
+    if (gameState.enemies.length === 0 && !gameState.gameOver) {
+      gameState.wave++;
 
-      enemies = generateEnemies(
-        wave + 1,
+      gameState.enemies = generateEnemies(
+        gameState.wave + 1,
         ctx.canvas.width,
         ctx.canvas.height,
-        player,
-        obstacles
+        gameState.player,
+        gameState.obstacles
       );
     }
 
     clearCanvas(ctx);
 
-    drawPlayer(ctx, player, camera);
-    drawBullets(ctx, playerBullets, camera.x, camera.y);
-    drawHealthBar(ctx, player);
+    drawPlayer(ctx, gameState.player, gameState.camera);
+    drawBullets(
+      ctx,
+      gameState.playerBullets,
+      gameState.camera.x,
+      gameState.camera.y
+    );
+    drawHealthBar(ctx, gameState.player);
 
-    drawEnemies(ctx, enemies, camera.x, camera.y);
-    drawBullets(ctx, enemyBullets, camera.x, camera.y);
+    drawEnemies(ctx, gameState.enemies, gameState.camera.x, gameState.camera.y);
+    drawBullets(
+      ctx,
+      gameState.enemyBullets,
+      gameState.camera.x,
+      gameState.camera.y
+    );
 
-    drawPowerUps(ctx, powerUps, camera.x, camera.y);
-    checkPowerUpCollisions(player, powerUps);
-    removeExpiredPowerUps(powerUps, timestamp);
+    drawPowerUps(
+      ctx,
+      gameState.powerUps,
+      gameState.camera.x,
+      gameState.camera.y
+    );
+    checkPowerUpCollisions(gameState.player, gameState.powerUps);
+    removeExpiredPowerUps(gameState.powerUps, timestamp);
 
-    drawObstacles(ctx, obstacles, camera.x, camera.y);
-    drawMap(ctx, camera.x, camera.y, wave);
+    drawObstacles(
+      ctx,
+      gameState.obstacles,
+      gameState.camera.x,
+      gameState.camera.y
+    );
+    drawMap(ctx, gameState.camera.x, gameState.camera.y, gameState.wave);
 
-    updateBullets(enemyBullets, ctx.canvas, obstacles);
-    updateBullets(playerBullets, ctx.canvas, obstacles);
+    updateBullets(gameState.enemyBullets, ctx.canvas, gameState.obstacles);
+    updateBullets(gameState.playerBullets, ctx.canvas, gameState.obstacles);
 
-    updatePositionInfo(player);
+    updatePositionInfo();
 
     animationFrameId = requestAnimationFrame(gameLoop);
   }

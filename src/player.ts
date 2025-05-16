@@ -4,7 +4,7 @@ import { checkCollision } from "./obstacles";
 import type { Player } from "./types/Player";
 import type { Camera } from "./types/Camera";
 import type { Bullet } from "./types/Bullet";
-import { getBrightness } from "./utils/getBrightenss";
+import { getBrightness } from "./utils/getBrightness";
 
 export function drawPlayer(
   ctx: CanvasRenderingContext2D,

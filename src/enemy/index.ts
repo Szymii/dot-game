@@ -1,10 +1,10 @@
-import { fireBullets } from "./bullets";
-import type { Bullet } from "./types/Bullet";
-import type { Enemy } from "./types/Enemy";
-import type { Obstacle } from "./types/Obstacle";
-import type { Player } from "./types/Player";
-import type { PowerUp, PowerUpType } from "./types/PowerUp";
-import { getBrightness } from "./utils/getBrightenss";
+import { fireBullets } from "../bullets";
+import type { Bullet } from "../types/Bullet";
+import type { Enemy } from "../types/Enemy";
+import type { Obstacle } from "../types/Obstacle";
+import type { Player } from "../types/Player";
+import type { PowerUp, PowerUpType } from "../types/PowerUp";
+import { getBrightness } from "../utils/getBrightness";
 
 export function drawEnemies(
   ctx: CanvasRenderingContext2D,
