@@ -1,15 +1,17 @@
 import type { Camera } from "./types/Camera";
 
 // Draw the map bounds and wave number
-export function drawMapBounds(
+export function drawMap(
   ctx: CanvasRenderingContext2D,
-  mapWidth: number,
-  mapHeight: number,
   cameraX: number,
   cameraY: number,
   wave: number
 ) {
   const app = document.getElementById("app")!;
+
+  const mapWidth = ctx.canvas.width;
+  const mapHeight = ctx.canvas.height;
+
   ctx.save();
   ctx.translate(-cameraX, -cameraY);
 
@@ -28,7 +30,7 @@ export function drawMapBounds(
   ctx.lineWidth = 2;
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  ctx.fillText(`Wave: ${wave}`, app.offsetWidth - 60, 20); // Draw text
+  ctx.fillText(`Wave: ${wave}`, app.offsetWidth - 60, 20);
   ctx.restore();
 }
 

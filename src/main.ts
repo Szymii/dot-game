@@ -2,9 +2,9 @@ import "./style.css";
 import { createCanvas } from "./canvas";
 import { createControlPanel } from "./controlPanel";
 import { startGameLoop } from "./gameLoop";
-import { obstacles } from "./assets/obstacles";
-import { createPlayer } from "./assets/player";
-import { preloadIcons } from "./assets/preloadAssets";
+import { createPlayer } from "./defaults/player";
+import { obstacles } from "./defaults/obstacles";
+import { preloadIcons } from "./utils/preloadAssets";
 
 function resetGame() {
   window.location.reload();

@@ -4,7 +4,7 @@ import {
   updateEnemies,
   checkBulletCollisionsWithEnemies,
 } from "./enemy";
-import { drawMapBounds, drawGameEndScreen } from "./map";
+import { drawMap, drawGameEndScreen } from "./map";
 import { updateBullets, drawBullets } from "./bullets";
 import {
   drawPowerUps,
@@ -17,7 +17,6 @@ import type { Obstacle } from "./types/Obstacle";
 import type { Enemy } from "./types/Enemy";
 import type { Bullet } from "./types/Bullet";
 import type { PowerUp } from "./types/PowerUp";
-import { generateEnemies } from "./assets/enemies";
 import {
   drawPlayer,
   updatePlayer,
@@ -26,6 +25,7 @@ import {
   drawHealthBar,
 } from "./player";
 import { clearCanvas } from "./canvas";
+import { generateEnemies } from "./defaults/enemies";
 
 function updatePositionInfo(player: Player) {
   const positionInfo = document.getElementById("position-info")!;
@@ -44,30 +44,36 @@ export async function startGameLoop(
   obstacles: Obstacle[],
   onGameOver: () => void
 ) {
-  let gameOver = false;
   let animationFrameId: number | null = null;
+
+  let wave = 1;
+  let gameOver = false;
   const playerBullets: Bullet[] = [];
   const enemyBullets: Bullet[] = [];
   const powerUps: PowerUp[] = [];
 
   let enemies: Enemy[] = generateEnemies(
-    1,
+    2,
     ctx.canvas.width,
     ctx.canvas.height,
     player,
     obstacles
   );
 
-  let wave = 1;
-
-  const mapWidth = ctx.canvas.width;
-  const mapHeight = ctx.canvas.height;
-
   function gameLoop(timestamp: number = 0) {
     if (gameOver) {
       drawGameEndScreen(ctx, camera, gameOver);
       onGameOver();
       return;
+    }
+
+    const bulletCollisionGameOver = checkBulletCollisionsWithPlayer(
+      player,
+      enemyBullets
+    );
+
+    if (bulletCollisionGameOver) {
+      gameOver = true;
     }
 
     const { playerNextX, playerNextY } = updatePlayer(
@@ -79,14 +85,6 @@ export async function startGameLoop(
     );
 
     firePlayerBullets(player, timestamp, playerBullets);
-
-    const bulletCollisionGameOver = checkBulletCollisionsWithPlayer(
-      player,
-      enemyBullets
-    );
-    if (bulletCollisionGameOver) {
-      gameOver = true;
-    }
 
     const enemyCollisionGameOver = updateEnemies(
       enemies,
@@ -112,13 +110,9 @@ export async function startGameLoop(
 
     if (enemies.length === 0 && !gameOver) {
       wave++;
-      if (wave > 4) {
-        drawGameEndScreen(ctx, camera, gameOver);
-        onGameOver();
-        return;
-      }
+
       enemies = generateEnemies(
-        wave,
+        wave + 1,
         ctx.canvas.width,
         ctx.canvas.height,
         player,
@@ -140,7 +134,7 @@ export async function startGameLoop(
     removeExpiredPowerUps(powerUps, timestamp);
 
     drawObstacles(ctx, obstacles, camera.x, camera.y);
-    drawMapBounds(ctx, mapWidth, mapHeight, camera.x, camera.y, wave);
+    drawMap(ctx, camera.x, camera.y, wave);
 
     updateBullets(enemyBullets, ctx.canvas, obstacles);
     updateBullets(playerBullets, ctx.canvas, obstacles);

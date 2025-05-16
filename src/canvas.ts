@@ -1,4 +1,4 @@
-import { GLOBALS } from "./assets/GLOBALS";
+import { GLOBALS } from "./state/GLOBALS";
 
 export function createCanvas(app: HTMLElement): HTMLCanvasElement {
   app.className =

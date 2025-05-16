@@ -1,6 +1,6 @@
-import { loadedIcons } from "./assets/preloadAssets";
 import type { Player } from "./types/Player";
 import type { PowerUp } from "./types/PowerUp";
+import { loadedIcons } from "./utils/preloadAssets";
 
 export function drawPowerUps(
   ctx: CanvasRenderingContext2D,
