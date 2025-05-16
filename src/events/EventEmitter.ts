@@ -1,22 +1,36 @@
-type EventCallback = (...args: any[]) => void;
+type EventType = "waveCleared" | "waveStarted" | "update";
+
+interface EventArgs {
+  waveCleared: [timestamp: number];
+  waveStarted: [wave: number];
+  update: [timestamp: number];
+}
+
+type EventCallback<T extends EventType> = (...args: EventArgs[T]) => void;
+
+interface EventMap {
+  [key: string]: EventCallback<EventType>[];
+}
 
 export class EventEmitter {
-  private events: { [key: string]: EventCallback[] } = {};
+  private events: EventMap = {};
 
-  on(event: string, callback: EventCallback) {
+  on<T extends EventType>(event: T, callback: EventCallback<T>) {
     if (!this.events[event]) {
       this.events[event] = [];
     }
-    this.events[event].push(callback);
+    this.events[event].push(callback as EventCallback<EventType>);
   }
 
-  off(event: string, callback: EventCallback) {
+  off<T extends EventType>(event: T, callback: EventCallback<T>) {
     if (this.events[event]) {
-      this.events[event] = this.events[event].filter((cb) => cb !== callback);
+      this.events[event] = this.events[event].filter(
+        (cb) => cb !== (callback as EventCallback<EventType>)
+      );
     }
   }
 
-  emit(event: string, ...args: any[]) {
+  emit<T extends EventType>(event: T, ...args: EventArgs[T]) {
     if (this.events[event]) {
       this.events[event].forEach((callback) => callback(...args));
     }

@@ -1,6 +1,6 @@
-import { generateEnemies } from "./enemy/generateEnemies";
-import { gameEvents } from "./events/EventEmitter";
-import { gameState } from "./state/gameState";
+import { generateEnemies } from "../enemy/generateEnemies";
+import { gameEvents } from "../events/EventEmitter";
+import { gameState } from "../state/gameState";
 
 const WAVE_DELAY = 10_000;
 
@@ -36,13 +36,13 @@ export function initWaveManager(ctx: CanvasRenderingContext2D) {
     gameState.obstacles
   );
 
-  gameEvents.on("waveCleared", (timestamp: number) => {
+  gameEvents.on("waveCleared", (timestamp) => {
     if (gameState.waveEnding === null) {
       gameState.waveEnding = timestamp;
     }
   });
 
-  gameEvents.on("update", (timestamp: number) => {
+  gameEvents.on("update", (timestamp) => {
     if (gameState.waveEnding === null) return;
 
     const timeLeft = WAVE_DELAY - (timestamp - gameState.waveEnding);

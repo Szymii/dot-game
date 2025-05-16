@@ -17,8 +17,8 @@ import {
   drawEnemies,
   updateEnemies,
 } from "./enemy";
-import { drawCountdown, initWaveManager } from "./waveManager";
 import { gameEvents } from "./events/EventEmitter";
+import { drawCountdown, initWaveManager } from "./waves/waveManager";
 
 function updatePositionInfo() {
   const positionInfo = document.getElementById("position-info")!;
