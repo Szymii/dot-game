@@ -1,5 +1,5 @@
+import { gameState } from "./state/gameState";
 import type { Bullet } from "./types/Bullet";
-import type { Obstacle } from "./types/Obstacle";
 
 // Function to create bullets based on a firing pattern
 export function fireBullets(
@@ -39,11 +39,7 @@ export function fireBullets(
 }
 
 // Function to update bullet positions and handle collisions
-export function updateBullets(
-  bullets: Bullet[],
-  canvas: HTMLCanvasElement,
-  obstacles: Obstacle[] // Add obstacles for collision detection
-) {
+export function updateBullets(bullets: Bullet[], canvas: HTMLCanvasElement) {
   for (let i = bullets.length - 1; i >= 0; i--) {
     const bullet = bullets[i];
     bullet.x += bullet.vx;
@@ -51,7 +47,7 @@ export function updateBullets(
 
     // Check for collisions with obstacles
     let collided = false;
-    for (const obstacle of obstacles) {
+    for (const obstacle of gameState.obstacles) {
       if (obstacle.type === "rectangle") {
         const closestX = Math.max(
           obstacle.x,
@@ -98,14 +94,9 @@ export function updateBullets(
 }
 
 // Function to draw bullets
-export function drawBullets(
-  ctx: CanvasRenderingContext2D,
-  bullets: Bullet[],
-  cameraX: number,
-  cameraY: number
-) {
+export function drawBullets(ctx: CanvasRenderingContext2D, bullets: Bullet[]) {
   ctx.save();
-  ctx.translate(-cameraX, -cameraY);
+  ctx.translate(-gameState.camera.x, -gameState.camera.y);
 
   bullets.forEach((bullet) => {
     ctx.beginPath();

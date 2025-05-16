@@ -1,9 +1,18 @@
-type EventType = "waveCleared" | "waveStarted" | "update";
+import type { Enemy } from "../types/Enemy";
+
+type EventType =
+  | "waveCleared"
+  | "waveStarted"
+  | "update"
+  | "consoleCommand"
+  | "enemyKilled";
 
 interface EventArgs {
   waveCleared: [timestamp: number];
   waveStarted: [wave: number];
   update: [timestamp: number];
+  consoleCommand: [command: string, args: string[]];
+  enemyKilled: [enemy: Enemy, timestamp: number];
 }
 
 type EventCallback<T extends EventType> = (...args: EventArgs[T]) => void;

@@ -1,17 +1,11 @@
-import type { Player } from "./types/Player";
-import type { PowerUp } from "./types/PowerUp";
+import { gameState } from "./state/gameState";
 import { loadedIcons } from "./utils/preloadAssets";
 
-export function drawPowerUps(
-  ctx: CanvasRenderingContext2D,
-  powerUps: PowerUp[],
-  cameraX: number,
-  cameraY: number
-) {
+export function drawPowerUps(ctx: CanvasRenderingContext2D) {
   ctx.save();
-  ctx.translate(-cameraX, -cameraY);
+  ctx.translate(-gameState.camera.x, -gameState.camera.y);
 
-  powerUps.forEach((powerUp) => {
+  gameState.powerUps.forEach((powerUp) => {
     const icon = loadedIcons[powerUp.type];
     if (icon) {
       const iconWidth = powerUp.width;
@@ -42,31 +36,27 @@ export function drawPowerUps(
   ctx.restore();
 }
 
-export function checkPowerUpCollisions(
-  player: Player,
-  powerUps: PowerUp[]
-): void {
-  for (let i = powerUps.length - 1; i >= 0; i--) {
-    const powerUp = powerUps[i];
-    const dx = powerUp.x - player.x;
-    const dy = powerUp.y - player.y;
+export function checkPowerUpCollisions(): void {
+  for (let i = gameState.powerUps.length - 1; i >= 0; i--) {
+    const powerUp = gameState.powerUps[i];
+    const dx = powerUp.x - gameState.player.x;
+    const dy = powerUp.y - gameState.player.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // Approximate collision using the player's radius and the power-up's dimensions
     const collisionDistance =
-      player.radius + Math.max(powerUp.width, powerUp.height) / 2;
+      gameState.player.radius + Math.max(powerUp.width, powerUp.height) / 2;
 
     if (distance < collisionDistance) {
       // Apply the power-up effect
       switch (powerUp.type) {
         case "extraBullet":
-          player.firingPattern.bulletCount += 1;
+          gameState.player.firingPattern.bulletCount += 1;
           break;
         case "fasterFireRate":
-          player.firingPattern.fireRate += 1;
+          gameState.player.firingPattern.fireRate += 1;
           break;
         case "fasterBullets":
-          player.firingPattern.speed += 2;
+          gameState.player.firingPattern.speed += 2;
           break;
         default: {
           const exhaustiveCheck: never = powerUp.type;
@@ -74,7 +64,7 @@ export function checkPowerUpCollisions(
         }
       }
       // Remove the power-up after collection
-      powerUps.splice(i, 1);
+      gameState.powerUps.splice(i, 1);
     }
   }
 }

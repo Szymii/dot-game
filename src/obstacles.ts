@@ -1,16 +1,12 @@
+import { gameState } from "./state/gameState";
 import type { Obstacle } from "./types/Obstacle";
 import type { Player } from "./types/Player";
 
-export function drawObstacles(
-  ctx: CanvasRenderingContext2D,
-  obstacles: Obstacle[],
-  cameraX: number,
-  cameraY: number
-) {
+export function drawObstacles(ctx: CanvasRenderingContext2D) {
   ctx.save();
-  ctx.translate(-cameraX, -cameraY);
+  ctx.translate(-gameState.camera.x, -gameState.camera.y);
 
-  obstacles.forEach((obstacle) => {
+  gameState.obstacles.forEach((obstacle) => {
     if (obstacle.type === "rectangle") {
       ctx.fillStyle = obstacle.color;
       ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);

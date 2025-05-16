@@ -1,11 +1,13 @@
 import "./style.css";
-import { createCanvas } from "./canvas";
 import { createControlPanel } from "./controlPanel";
 import { startGameLoop } from "./gameLoop";
 import { preloadIcons } from "./utils/preloadAssets";
 import { createPlayer } from "./state/player";
 import { obstacles } from "./state/obstacles";
 import { gameState } from "./state/gameState";
+import { initConsole } from "./console";
+import { initConsoleCommands } from "./console/consoleCommands";
+import { createCanvas } from "./canvas";
 
 function resetGame() {
   window.location.reload();
@@ -39,6 +41,9 @@ function initApp() {
 
     const controlPanel = createControlPanel(app, player);
     gameState.keys = controlPanel.keys;
+
+    initConsole(app);
+    initConsoleCommands();
 
     const stopGame = await startGameLoop(ctx, onGameOver);
 

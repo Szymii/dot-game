@@ -1,6 +1,5 @@
 import { drawObstacles } from "./obstacles";
 
-import { drawMap, drawGameEndScreen } from "./map";
 import { updateBullets, drawBullets } from "./bullets";
 import { drawPowerUps, checkPowerUpCollisions } from "./powerups";
 import {
@@ -10,7 +9,6 @@ import {
   checkBulletCollisionsWithPlayer,
   drawHealthBar,
 } from "./player";
-import { clearCanvas } from "./canvas";
 import { gameState } from "./state/gameState";
 import {
   checkBulletCollisionsWithEnemies,
@@ -19,6 +17,9 @@ import {
 } from "./enemy";
 import { gameEvents } from "./events/EventEmitter";
 import { drawCountdown, initWaveManager } from "./waves/waveManager";
+import { initEnemyManager } from "./enemy/enemyManager";
+import { drawGameEndScreen, drawMap } from "./canvas/map";
+import { clearCanvas } from "./canvas";
 
 function updatePositionInfo() {
   const positionInfo = document.getElementById("position-info")!;
@@ -35,42 +36,30 @@ export async function startGameLoop(
 ) {
   let animationFrameId: number | null = null;
 
+  initEnemyManager();
   initWaveManager(ctx);
 
   function gameLoop(timestamp: number = 0) {
     if (gameState.gameOver) {
-      drawGameEndScreen(ctx, gameState.camera, gameState.gameOver);
+      drawGameEndScreen(ctx);
       onGameOver();
       return;
     }
 
-    const bulletCollisionGameOver = checkBulletCollisionsWithPlayer(
-      gameState.player,
-      gameState.enemyBullets
-    );
+    const bulletCollisionGameOver = checkBulletCollisionsWithPlayer(); //todo
 
     if (bulletCollisionGameOver) {
       gameState.gameOver = true;
     }
 
-    const { playerNextX, playerNextY } = updatePlayer(
-      gameState.player,
-      gameState.camera,
-      gameState.keys,
-      gameState.obstacles,
-      ctx.canvas
-    );
+    const { playerNextX, playerNextY } = updatePlayer(ctx.canvas);
 
-    firePlayerBullets(gameState.player, timestamp, gameState.playerBullets);
+    firePlayerBullets(timestamp);
 
     const enemyCollisionGameOver = updateEnemies(
-      gameState.enemies,
-      gameState.player,
+      ctx.canvas,
       playerNextX,
       playerNextY,
-      gameState.obstacles,
-      ctx.canvas,
-      gameState.enemyBullets,
       timestamp
     );
 
@@ -78,12 +67,7 @@ export async function startGameLoop(
       gameState.gameOver = true;
     }
 
-    checkBulletCollisionsWithEnemies(
-      gameState.enemies,
-      gameState.playerBullets,
-      gameState.powerUps,
-      timestamp
-    );
+    checkBulletCollisionsWithEnemies(timestamp); // todo
 
     if (
       gameState.enemies.length === 0 &&
@@ -95,43 +79,23 @@ export async function startGameLoop(
 
     clearCanvas(ctx);
 
-    drawPlayer(ctx, gameState.player, gameState.camera);
-    drawBullets(
-      ctx,
-      gameState.playerBullets,
-      gameState.camera.x,
-      gameState.camera.y
-    );
-    drawHealthBar(ctx, gameState.player);
+    drawPlayer(ctx);
+    drawBullets(ctx, gameState.playerBullets);
+    drawHealthBar(ctx);
 
-    drawEnemies(ctx, gameState.enemies, gameState.camera.x, gameState.camera.y);
-    drawBullets(
-      ctx,
-      gameState.enemyBullets,
-      gameState.camera.x,
-      gameState.camera.y
-    );
+    drawEnemies(ctx);
+    drawBullets(ctx, gameState.enemyBullets);
 
-    drawPowerUps(
-      ctx,
-      gameState.powerUps,
-      gameState.camera.x,
-      gameState.camera.y
-    );
-    checkPowerUpCollisions(gameState.player, gameState.powerUps);
+    drawPowerUps(ctx);
+    checkPowerUpCollisions(); // todo
 
-    drawObstacles(
-      ctx,
-      gameState.obstacles,
-      gameState.camera.x,
-      gameState.camera.y
-    );
-    drawMap(ctx, gameState.camera.x, gameState.camera.y, gameState.wave);
+    drawObstacles(ctx);
+    drawMap(ctx);
 
     drawCountdown(ctx, timestamp);
 
-    updateBullets(gameState.enemyBullets, ctx.canvas, gameState.obstacles);
-    updateBullets(gameState.playerBullets, ctx.canvas, gameState.obstacles);
+    updateBullets(gameState.enemyBullets, ctx.canvas);
+    updateBullets(gameState.playerBullets, ctx.canvas);
 
     updatePositionInfo();
 

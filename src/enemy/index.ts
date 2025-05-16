@@ -1,21 +1,13 @@
 import { fireBullets } from "../bullets";
-import type { Bullet } from "../types/Bullet";
-import type { Enemy } from "../types/Enemy";
-import type { Obstacle } from "../types/Obstacle";
-import type { Player } from "../types/Player";
-import type { PowerUp, PowerUpType } from "../types/PowerUp";
+import { gameEvents } from "../events/EventEmitter";
+import { gameState } from "../state/gameState";
 import { getBrightness } from "../utils/getBrightness";
 
-export function drawEnemies(
-  ctx: CanvasRenderingContext2D,
-  enemies: Enemy[],
-  cameraX: number,
-  cameraY: number
-) {
+export function drawEnemies(ctx: CanvasRenderingContext2D) {
   ctx.save();
-  ctx.translate(-cameraX, -cameraY);
+  ctx.translate(-gameState.camera.x, -gameState.camera.y);
 
-  enemies.forEach((enemy) => {
+  gameState.enemies.forEach((enemy) => {
     // Draw the enemy
     ctx.beginPath();
     ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
@@ -39,18 +31,14 @@ export function drawEnemies(
 }
 
 export function updateEnemies(
-  enemies: Enemy[],
-  player: Player,
+  canvas: HTMLCanvasElement,
   playerNextX: number,
   playerNextY: number,
-  obstacles: Obstacle[],
-  canvas: HTMLCanvasElement,
-  enemyBullets: Bullet[],
   timestamp: number
 ): boolean {
   let gameOver = false;
 
-  enemies.forEach((enemy, index) => {
+  gameState.enemies.forEach((enemy, index) => {
     const speedMagnitude = Math.sqrt(enemy.vx * enemy.vx + enemy.vy * enemy.vy);
     if (speedMagnitude !== 0) {
       enemy.vx = (enemy.vx / speedMagnitude) * enemy.speed;
@@ -69,7 +57,7 @@ export function updateEnemies(
         enemy.firingPattern.speed,
         enemy.color
       );
-      enemyBullets.push(...newBullets);
+      gameState.enemyBullets.push(...newBullets);
       enemy.firingPattern.lastFired = timestamp;
     }
 
@@ -85,7 +73,7 @@ export function updateEnemies(
       nextY = enemy.y + enemy.vy;
     }
 
-    obstacles.forEach((obstacle) => {
+    gameState.obstacles.forEach((obstacle) => {
       if (obstacle.type === "rectangle") {
         const closestX = Math.max(
           obstacle.x,
@@ -156,14 +144,14 @@ export function updateEnemies(
     const dx = nextX - playerNextX;
     const dy = nextY - playerNextY;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    if (distance < enemy.radius + player.radius) {
+    if (distance < enemy.radius + gameState.player.radius) {
       gameOver = true;
       return;
     }
 
-    for (let i = 0; i < enemies.length; i++) {
+    for (let i = 0; i < gameState.enemies.length; i++) {
       if (i === index) continue;
-      const otherEnemy = enemies[i];
+      const otherEnemy = gameState.enemies[i];
       const enemyDistanceX = nextX - otherEnemy.x;
       const enemyDistanceY = nextY - otherEnemy.y;
       const enemyDistance = Math.sqrt(
@@ -179,8 +167,7 @@ export function updateEnemies(
           nextX += normalX * overlap * 0.5;
           nextY += normalY * overlap * 0.5;
           otherEnemy.x -= normalX * overlap * 0.5;
-          otherEnemy.y -= normalY * overlap * 0.5;
-
+          otherEnemy.y -= normalX * overlap * 0.5;
           const dot = enemy.vx * normalX + enemy.vy * normalY;
           enemy.vx -= 2 * dot * normalX;
           enemy.vy -= 2 * dot * normalY;
@@ -208,16 +195,11 @@ export function updateEnemies(
   return gameOver;
 }
 
-export function checkBulletCollisionsWithEnemies(
-  enemies: Enemy[],
-  playerBullets: Bullet[],
-  powerUps: PowerUp[],
-  timestamp: number
-) {
-  for (let i = enemies.length - 1; i >= 0; i--) {
-    const enemy = enemies[i];
-    for (let j = playerBullets.length - 1; j >= 0; j--) {
-      const bullet = playerBullets[j];
+export function checkBulletCollisionsWithEnemies(timestamp: number) {
+  for (let i = gameState.enemies.length - 1; i >= 0; i--) {
+    const enemy = gameState.enemies[i];
+    for (let j = gameState.playerBullets.length - 1; j >= 0; j--) {
+      const bullet = gameState.playerBullets[j];
       const dx = bullet.x - enemy.x;
       const dy = bullet.y - enemy.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
@@ -225,29 +207,9 @@ export function checkBulletCollisionsWithEnemies(
 
       if (distance < combinedRadius) {
         enemy.hp -= 1;
-        playerBullets.splice(j, 1);
+        gameState.playerBullets.splice(j, 1);
         if (enemy.hp <= 0) {
-          // Create a power-up at the enemy's position
-          const powerUpTypes: PowerUpType[] = [
-            "extraBullet",
-            "fasterFireRate",
-            "fasterBullets",
-          ];
-
-          const randomType =
-            powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-          const powerUp: PowerUp = {
-            x: enemy.x,
-            y: enemy.y,
-            width: 24,
-            height: 24,
-            type: randomType,
-            spawnTime: timestamp,
-          };
-          powerUps.push(powerUp);
-
-          // Remove the enemy
-          enemies.splice(i, 1);
+          gameEvents.emit("enemyKilled", enemy, timestamp);
           break;
         }
       }
