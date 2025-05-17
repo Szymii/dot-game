@@ -1,28 +1,65 @@
-// turretManager.ts
+import { turretIconMap } from ".";
 import { gameEvents } from "../events/EventEmitter";
 import { gameState } from "../state/gameState";
 import { predefinedTurrets } from "../state/predefinedTurrets";
+import { loadedIcons } from "../utils/preloadAssets";
 import type { Turret, TurretType } from "./Turret";
+
+// Słownik opisów wieżyczek po angielsku
+const turretDescriptions: Record<
+  TurretType,
+  { title: string; description: string }
+> = {
+  fast: {
+    title: "Rapid Fire",
+    description: "Fires 4 bullets with high fire rate",
+  },
+  fastBullets: {
+    title: "Fast Bullets",
+    description: "Fires 4 bullets with normal fire rate",
+  },
+  manyBullets: {
+    title: "Multi-Shot",
+    description: "Fires 5 bullets with normal fire rate",
+  },
+};
 
 export function initTurretManager(canvas: HTMLCanvasElement) {
   let selectedTurretType: TurretType | null = null;
   let canPlaceTurret = false;
 
-  // Interfejs HTML z Tailwindem
   const turretUI = document.createElement("div");
   turretUI.id = "turret-ui";
   turretUI.className =
-    "fixed right-4 top-1/4 bg-gray-800 p-4 rounded-lg shadow-lg text-white w-64 hidden";
+    "fixed right-4 top-1/4 bg-black/80 bg-opacity-80 p-4 rounded-lg shadow-lg text-white w-64 hidden";
   turretUI.innerHTML = `
-    <h2 class="text-lg font-bold mb-2">Wybierz wieżyczkę</h2>
-    <button id="fast-turret" class="w-full bg-blue-500 hover:bg-blue-700 text-white py-2 mb-2 rounded">
-      Szybka (4 pociski, szybki strzał)
+    <h2 class="text-lg font-bold mb-4">Choose a Turret</h2>
+    <button id="fast-turret" class="w-full border-2 border-transparent hover:border-white text-white py-2 px-4 mb-2 gap-2 rounded flex items-center cursor-pointer transition-all">
+      <img src="${
+        loadedIcons[turretIconMap.fast].src
+      }" class="w-6 h-6" alt="Fast Turret" />
+      <div class="text-left">
+        <span class="font-bold">${turretDescriptions.fast.title}</span>
+        <p class="text-sm">${turretDescriptions.fast.description}</p>
+      </div>
     </button>
-    <button id="fast-bullets-turret" class="w-full bg-green-500 hover:bg-green-700 text-white py-2 mb-2 rounded">
-      Szybkie pociski (normalny strzał)
+    <button id="fast-bullets-turret" class="w-full border-2 border-transparent hover:border-white text-white py-2 px-4 mb-2 gap-2 rounded flex items-center cursor-pointer transition-all">
+      <img src="${
+        loadedIcons[turretIconMap.fastBullets].src
+      }" class="w-6 h-6" alt="Fast Bullets Turret" />
+      <div class="text-left">
+        <span class="font-bold">${turretDescriptions.fastBullets.title}</span>
+        <p class="text-sm">${turretDescriptions.fastBullets.description}</p>
+      </div>
     </button>
-    <button id="many-bullets-turret" class="w-full bg-red-500 hover:bg-red-700 text-white py-2 rounded">
-      Wiele pocisków (5 pocisków)
+    <button id="many-bullets-turret" class="w-full border-2 border-transparent hover:border-white text-white py-2 px-4 gap-2 rounded flex items-center cursor-pointer transition-all">
+      <img src="${
+        loadedIcons[turretIconMap.manyBullets].src
+      }" class="w-6 h-6" alt="Multi-Shot Turret" />
+      <div class="text-left">
+        <span class="font-bold">${turretDescriptions.manyBullets.title}</span>
+        <p class="text-sm">${turretDescriptions.manyBullets.description}</p>
+      </div>
     </button>
   `;
   document.body.appendChild(turretUI);

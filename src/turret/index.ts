@@ -4,7 +4,7 @@ import { gameState } from "../state/gameState";
 import { loadedIcons } from "../utils/preloadAssets";
 import type { TurretType } from "./Turret";
 
-const turretIconMap: Record<TurretType, keyof typeof loadedIcons> = {
+export const turretIconMap: Record<TurretType, keyof typeof loadedIcons> = {
   fast: "fastTurret",
   fastBullets: "fastBulletTurret",
   manyBullets: "multiBulletTurret",

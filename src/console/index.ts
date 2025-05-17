@@ -5,7 +5,7 @@ export function initConsole(app: HTMLElement) {
   consoleContainer.id = "dev-console";
   consoleContainer.style.display = "none";
   consoleContainer.className =
-    "fixed top-2 left-2 w-96 bg-black/80 text-white p-4 rounded-lg z-50 duration-300 font-mono z-10";
+    "fixed top-2 left-2 w-96 bg-black/80 text-white p-4 rounded-lg z-50 duration-300 font-mono";
 
   const input = document.createElement("input");
   input.type = "text";
