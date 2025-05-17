@@ -8,6 +8,7 @@ export function killEnemy(enemy: Enemy, timestamp: number) {
     "extraBullet",
     "fasterFireRate",
     "fasterBullets",
+    "heal",
   ];
   const randomType =
     powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];

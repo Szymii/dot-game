@@ -7,6 +7,7 @@ const icons = {
   fastTurret: "/dot-game/fastTurret.svg",
   fastBulletTurret: "/dot-game/fastBulletTurret.svg",
   multiBulletTurret: "/dot-game/multiBulletTurret.svg",
+  heal: "/dot-game/heal.svg",
 } as const;
 
 export const loadedIcons: Icon = {} as Icon;

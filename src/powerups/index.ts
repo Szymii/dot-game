@@ -57,6 +57,15 @@ export function checkPowerUpCollisions(): void {
         case "fasterBullets":
           gameState.player.firingPattern.speed += 2;
           break;
+        case "heal":
+          gameState.player.hp += 3;
+          if (gameState.player.maxHp) {
+            gameState.player.hp = Math.min(
+              gameState.player.hp,
+              gameState.player.maxHp
+            );
+          }
+          break;
         default: {
           const exhaustiveCheck: never = powerUp.type;
           throw new Error(`Unhandled power-up type: ${exhaustiveCheck}`);

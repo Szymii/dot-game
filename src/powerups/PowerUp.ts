@@ -1,4 +1,8 @@
-export type PowerUpType = "extraBullet" | "fasterFireRate" | "fasterBullets";
+export type PowerUpType =
+  | "extraBullet"
+  | "fasterFireRate"
+  | "fasterBullets"
+  | "heal";
 
 export type PowerUp = {
   x: number;
