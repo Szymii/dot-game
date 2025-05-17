@@ -1,4 +1,4 @@
-import type { Player } from "./types/Player";
+import type { Player } from "./player/Player";
 
 export function createControlPanel(app: HTMLElement, player: Player) {
   const controlPanel = document.createElement("div");

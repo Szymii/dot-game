@@ -1,4 +1,4 @@
-import type { Enemy } from "../types/Enemy";
+import type { Enemy } from "../enemy/Enemy";
 
 type EventType =
   | "waveCleared"

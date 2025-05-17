@@ -1,5 +1,5 @@
+import type { Obstacle } from "../obstacles/Obstacle";
 import { GLOBALS } from "../state/GLOBALS";
-import type { Obstacle } from "../types/Obstacle";
 
 export const obstacles: Obstacle[] = [
   {

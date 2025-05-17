@@ -1,5 +1,5 @@
-import { gameState } from "./state/gameState";
-import { loadedIcons } from "./utils/preloadAssets";
+import { gameState } from "../state/gameState";
+import { loadedIcons } from "../utils/preloadAssets";
 
 export function drawPowerUps(ctx: CanvasRenderingContext2D) {
   ctx.save();

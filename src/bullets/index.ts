@@ -1,5 +1,5 @@
-import { gameState } from "./state/gameState";
-import type { Bullet } from "./types/Bullet";
+import { gameState } from "../state/gameState";
+import type { Bullet } from "./Bullet";
 
 // Function to create bullets based on a firing pattern
 export function fireBullets(

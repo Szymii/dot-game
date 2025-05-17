@@ -1,6 +1,6 @@
+import type { Camera } from "../player/Camera";
+import type { Player } from "../player/Player";
 import { GLOBALS } from "../state/GLOBALS";
-import type { Camera } from "../types/Camera";
-import type { Player } from "../types/Player";
 
 export function createPlayer(app: HTMLElement): {
   player: Player;

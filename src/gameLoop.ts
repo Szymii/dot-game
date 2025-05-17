@@ -1,7 +1,3 @@
-import { drawObstacles } from "./obstacles";
-
-import { updateBullets, drawBullets } from "./bullets";
-import { drawPowerUps, checkPowerUpCollisions } from "./powerups";
 import {
   drawPlayer,
   updatePlayer,
@@ -21,6 +17,9 @@ import { initEnemyManager } from "./enemy/enemyManager";
 import { drawGameEndScreen, drawMap } from "./canvas/map";
 import { clearCanvas } from "./canvas";
 import { initPlayerManager } from "./player/playerManager";
+import { drawBullets, updateBullets } from "./bullets";
+import { checkPowerUpCollisions, drawPowerUps } from "./powerups";
+import { drawObstacles } from "./obstacles";
 
 function updatePositionInfo() {
   const positionInfo = document.getElementById("position-info")!;

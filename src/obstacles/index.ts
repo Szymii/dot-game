@@ -1,6 +1,6 @@
-import { gameState } from "./state/gameState";
-import type { Obstacle } from "./types/Obstacle";
-import type { Player } from "./types/Player";
+import type { Player } from "../player/Player";
+import { gameState } from "../state/gameState";
+import type { Obstacle } from "./Obstacle";
 
 export function drawObstacles(ctx: CanvasRenderingContext2D) {
   ctx.save();

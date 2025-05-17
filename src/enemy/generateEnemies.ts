@@ -1,7 +1,7 @@
-import type { Enemy } from "../types/Enemy";
-import type { Player } from "../types/Player";
-import type { Obstacle } from "../types/Obstacle";
+import type { Obstacle } from "../obstacles/Obstacle";
+import type { Player } from "../player/Player";
 import { getRandomColor } from "../utils/getRandomColor";
+import type { Enemy } from "./Enemy";
 
 function collidesWithObstacle(
   x: number,

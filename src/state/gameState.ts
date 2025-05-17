@@ -1,9 +1,9 @@
-import type { Camera } from "../types/Camera";
-import type { Player } from "../types/Player";
-import type { Obstacle } from "../types/Obstacle";
-import type { Enemy } from "../types/Enemy";
-import type { Bullet } from "../types/Bullet";
-import type { PowerUp } from "../types/PowerUp";
+import type { Bullet } from "../bullets/Bullet";
+import type { Enemy } from "../enemy/Enemy";
+import type { Obstacle } from "../obstacles/Obstacle";
+import type { Camera } from "../player/Camera";
+import type { Player } from "../player/Player";
+import type { PowerUp } from "../powerups/PowerUp";
 
 interface GameState {
   player: Player;
