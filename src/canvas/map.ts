@@ -29,6 +29,13 @@ export function drawMap(ctx: CanvasRenderingContext2D) {
 export function drawGameEndScreen(ctx: CanvasRenderingContext2D) {
   const { camera, wave } = gameState;
 
+  let currentHighScore = Number(localStorage.getItem("dotGameHighScore"));
+
+  if (gameState.wave > currentHighScore) {
+    localStorage.setItem("dotGameHighScore", currentHighScore.toString());
+    currentHighScore = gameState.wave;
+  }
+
   ctx.save();
   ctx.translate(-camera.x, -camera.y);
   ctx.fillStyle = "black";
@@ -41,17 +48,17 @@ export function drawGameEndScreen(ctx: CanvasRenderingContext2D) {
   ctx.shadowBlur = 4;
 
   ctx.font = "48px Arial";
-  ctx.fillText(
-    "You died",
-    camera.x + camera.width / 2,
-    camera.y + camera.height / 2 - 20
-  );
+  ctx.fillText("You died", camera.x + camera.width / 2, camera.y + 200);
 
   ctx.font = "24px Arial";
+  ctx.fillText(`Wave ${wave}`, camera.x + camera.width / 2, camera.y + 250);
+
+  ctx.font = "24px Arial";
+  ctx.fillStyle = "white";
   ctx.fillText(
-    `Wave ${wave}`,
+    `High Score: Wave ${currentHighScore}`,
     camera.x + camera.width / 2,
-    camera.y + camera.height / 2 + 20
+    camera.y + 290
   );
 
   ctx.shadowBlur = 0;
