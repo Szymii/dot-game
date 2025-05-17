@@ -14,14 +14,7 @@ export function drawPlayer(ctx: CanvasRenderingContext2D) {
   const x = gameState.player.x - size / 2;
   const y = gameState.player.y - size / 2;
 
-  ctx.save();
-
   ctx.drawImage(icon, x, y, size, size);
-
-  ctx.globalCompositeOperation = "source-in";
-  ctx.fillStyle = gameState.player.color;
-  ctx.fillRect(x, y, size, size);
-  ctx.restore();
 
   ctx.restore();
 }

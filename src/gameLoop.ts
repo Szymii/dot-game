@@ -20,6 +20,12 @@ import { initPlayerManager } from "./player/playerManager";
 import { drawBullets, updateBullets } from "./bullets";
 import { checkPowerUpCollisions, drawPowerUps } from "./powerups";
 import { drawObstacles } from "./obstacles";
+import { initTurretManager } from "./turret/turretManager";
+import {
+  checkTurretBulletCollisions,
+  drawTurrets,
+  updateTurrets,
+} from "./turret";
 
 function updatePositionInfo() {
   const positionInfo = document.getElementById("position-info")!;
@@ -39,6 +45,7 @@ export async function startGameLoop(
   initPlayerManager();
   initEnemyManager();
   initWaveManager(ctx);
+  initTurretManager(ctx.canvas);
 
   function gameLoop(timestamp: number = 0) {
     if (gameState.gameOver) {
@@ -50,6 +57,9 @@ export async function startGameLoop(
     const { playerNextX, playerNextY } = updatePlayer(ctx.canvas);
     checkBulletCollisionsWithPlayer();
     firePlayerBullets(timestamp);
+
+    updateTurrets(timestamp);
+    checkTurretBulletCollisions();
 
     updateEnemies(ctx.canvas, playerNextX, playerNextY, timestamp);
     checkBulletCollisionsWithEnemies();
@@ -77,10 +87,13 @@ export async function startGameLoop(
     drawObstacles(ctx);
     drawMap(ctx);
 
+    drawTurrets(ctx);
+
     drawCountdown(ctx, timestamp);
 
     updateBullets(gameState.enemyBullets, ctx.canvas);
     updateBullets(gameState.playerBullets, ctx.canvas);
+    updateBullets(gameState.turretBullets, ctx.canvas);
 
     updatePositionInfo();
 

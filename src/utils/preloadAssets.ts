@@ -4,6 +4,9 @@ const icons = {
   fasterFireRate: "/dot-game/fasterFireRate.svg",
   fasterBullets: "/dot-game/fasterBullets.svg",
   ship: "/dot-game/ship.svg",
+  fastTurret: "/dot-game/fastTurret.svg",
+  fastBulletTurret: "/dot-game/fastBulletTurret.svg",
+  multiBulletTurret: "/dot-game/multiBulletTurret.svg",
 } as const;
 
 export const loadedIcons: Icon = {} as Icon;

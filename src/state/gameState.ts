@@ -4,6 +4,7 @@ import type { Obstacle } from "../obstacles/Obstacle";
 import type { Camera } from "../player/Camera";
 import type { Player } from "../player/Player";
 import type { PowerUp } from "../powerups/PowerUp";
+import type { Turret } from "../turret/Turret";
 
 interface GameState {
   player: Player;
@@ -12,6 +13,8 @@ interface GameState {
   enemies: Enemy[];
   playerBullets: Bullet[];
   enemyBullets: Bullet[];
+  turretBullets: Bullet[];
+  turrets: Turret[];
   powerUps: PowerUp[];
   wave: number;
   gameOver: boolean;
@@ -26,6 +29,8 @@ export const gameState: GameState = {
   enemies: [],
   playerBullets: [],
   enemyBullets: [],
+  turretBullets: [],
+  turrets: [],
   powerUps: [],
   wave: 1,
   gameOver: false,
