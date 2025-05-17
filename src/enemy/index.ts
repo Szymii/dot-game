@@ -8,20 +8,33 @@ export function drawEnemies(ctx: CanvasRenderingContext2D) {
   ctx.translate(-gameState.camera.x, -gameState.camera.y);
 
   gameState.enemies.forEach((enemy) => {
+    const { x, y, radius, color, hp } = enemy;
+
+    ctx.save();
+    ctx.translate(x, y);
+
     ctx.beginPath();
-    ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
-    ctx.fillStyle = enemy.color;
+    ctx.ellipse(0, 0, radius, radius * 0.5, 0, 0, Math.PI * 2);
+    ctx.fillStyle = color;
     ctx.fill();
     ctx.closePath();
 
-    const brightness = getBrightness(enemy.color);
+    ctx.beginPath();
+    ctx.arc(0, -radius * 0.5, radius * 0.5, Math.PI, 0);
+    ctx.fillStyle = "lightblue";
+    ctx.fill();
+    ctx.closePath();
+
+    ctx.restore();
+
+    const brightness = getBrightness(color);
     const textColor = brightness > 150 ? "black" : "white";
 
     ctx.fillStyle = textColor;
     ctx.font = "bold 16px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(`${enemy.hp}`, enemy.x, enemy.y);
+    ctx.fillText(`${hp}`, x, y);
   });
 
   ctx.restore();
