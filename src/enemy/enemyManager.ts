@@ -3,7 +3,7 @@ import type { PowerUp, PowerUpType } from "../powerups/PowerUp";
 import { gameState } from "../state/gameState";
 import type { Enemy } from "./Enemy";
 
-export function killEnemy(enemy: Enemy, timestamp: number) {
+function killEnemy(enemy: Enemy, timestamp: number) {
   const powerUpTypes: PowerUpType[] = [
     "extraBullet",
     "fasterFireRate",

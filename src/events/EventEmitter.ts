@@ -25,7 +25,7 @@ interface EventMap {
   [key: string]: EventCallback<EventType>[];
 }
 
-export class EventEmitter {
+class EventEmitter {
   private events: EventMap = {};
 
   on<T extends EventType>(event: T, callback: EventCallback<T>) {
