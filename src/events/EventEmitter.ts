@@ -5,7 +5,8 @@ type EventType =
   | "waveStarted"
   | "update"
   | "consoleCommand"
-  | "enemyKilled";
+  | "enemyKilled"
+  | "playerHit";
 
 interface EventArgs {
   waveCleared: [timestamp: number];
@@ -13,6 +14,7 @@ interface EventArgs {
   update: [timestamp: number];
   consoleCommand: [command: string, args: string[]];
   enemyKilled: [enemy: Enemy, timestamp: number];
+  playerHit: [bulletIndex: number];
 }
 
 type EventCallback<T extends EventType> = (...args: EventArgs[T]) => void;

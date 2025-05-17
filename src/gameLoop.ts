@@ -20,6 +20,7 @@ import { drawCountdown, initWaveManager } from "./waves/waveManager";
 import { initEnemyManager } from "./enemy/enemyManager";
 import { drawGameEndScreen, drawMap } from "./canvas/map";
 import { clearCanvas } from "./canvas";
+import { initPlayerManager } from "./player/playerManager";
 
 function updatePositionInfo() {
   const positionInfo = document.getElementById("position-info")!;
@@ -36,6 +37,7 @@ export async function startGameLoop(
 ) {
   let animationFrameId: number | null = null;
 
+  initPlayerManager();
   initEnemyManager();
   initWaveManager(ctx);
 
@@ -46,14 +48,9 @@ export async function startGameLoop(
       return;
     }
 
-    const bulletCollisionGameOver = checkBulletCollisionsWithPlayer(); //todo
-
-    if (bulletCollisionGameOver) {
-      gameState.gameOver = true;
-    }
-
     const { playerNextX, playerNextY } = updatePlayer(ctx.canvas);
 
+    checkBulletCollisionsWithPlayer();
     firePlayerBullets(timestamp);
 
     const enemyCollisionGameOver = updateEnemies(

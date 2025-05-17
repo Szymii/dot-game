@@ -1,4 +1,5 @@
 import { fireBullets } from "../bullets";
+import { gameEvents } from "../events/EventEmitter";
 import { checkCollision } from "../obstacles";
 import { gameState } from "../state/gameState";
 import { loadedIcons } from "../utils/preloadAssets";
@@ -95,9 +96,7 @@ export function firePlayerBullets(timestamp: number) {
   }
 }
 
-export function checkBulletCollisionsWithPlayer(): boolean {
-  let gameOver = false;
-
+export function checkBulletCollisionsWithPlayer() {
   for (let i = gameState.enemyBullets.length - 1; i >= 0; i--) {
     const bullet = gameState.enemyBullets[i];
     const dx = bullet.x - gameState.player.x;
@@ -106,16 +105,9 @@ export function checkBulletCollisionsWithPlayer(): boolean {
     const combinedRadius = bullet.radius + gameState.player.radius;
 
     if (distance < combinedRadius) {
-      gameState.player.hp -= 1;
-      gameState.enemyBullets.splice(i, 1);
-      if (gameState.player.hp <= 0) {
-        gameOver = true;
-        break;
-      }
+      gameEvents.emit("playerHit", i);
     }
   }
-
-  return gameOver;
 }
 
 export function drawHealthBar(ctx: CanvasRenderingContext2D) {
