@@ -40,7 +40,6 @@ function collidesWithObstacle(
   return false;
 }
 
-// Function to generate a single enemy with random stats
 function generateEnemy(
   canvasWidth: number,
   canvasHeight: number,

@@ -45,7 +45,7 @@ export async function startGameLoop(
   initPlayerManager();
   initEnemyManager();
   initWaveManager(ctx);
-  initTurretManager(ctx.canvas);
+  const previewTurret = initTurretManager(ctx.canvas);
 
   function gameLoop(timestamp: number = 0) {
     if (gameState.gameOver) {
@@ -87,7 +87,7 @@ export async function startGameLoop(
     drawObstacles(ctx);
     drawMap(ctx);
 
-    drawTurrets(ctx);
+    drawTurrets(ctx, previewTurret.getPreviewTurret());
 
     drawCountdown(ctx, timestamp);
 

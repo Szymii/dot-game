@@ -1,6 +1,5 @@
 import { gameState } from "../state/gameState";
 
-// Draw the map bounds and wave number
 export function drawMap(ctx: CanvasRenderingContext2D) {
   const app = document.getElementById("app")!;
 
@@ -10,14 +9,12 @@ export function drawMap(ctx: CanvasRenderingContext2D) {
   ctx.save();
   ctx.translate(-gameState.camera.x, -gameState.camera.y);
 
-  // Draw map bounds
   ctx.strokeStyle = "white";
   ctx.lineWidth = 3;
   ctx.strokeRect(0, 0, mapWidth, mapHeight);
 
   ctx.restore();
 
-  // Draw the wave number at the top center of the screen
   ctx.save();
   ctx.font = "bold 24px Arial";
   ctx.fillStyle = "white";
@@ -29,25 +26,34 @@ export function drawMap(ctx: CanvasRenderingContext2D) {
   ctx.restore();
 }
 
-// Draw the game end screen ("Game Over" or "Victory")
 export function drawGameEndScreen(ctx: CanvasRenderingContext2D) {
-  const { camera, gameOver } = gameState;
+  const { camera, wave } = gameState;
 
   ctx.save();
   ctx.translate(-camera.x, -camera.y);
   ctx.fillStyle = "black";
   ctx.fillRect(camera.x, camera.y, camera.width, camera.height);
-  ctx.font = "48px Arial";
-  ctx.fillStyle = gameOver ? "red" : "green";
+
+  ctx.fillStyle = "red";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
+  ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
+  ctx.shadowBlur = 4;
 
-  const message = gameOver ? "You died" : "Victory!";
-
+  ctx.font = "48px Arial";
   ctx.fillText(
-    message,
+    "You died",
     camera.x + camera.width / 2,
-    camera.y + camera.height / 2
+    camera.y + camera.height / 2 - 20
   );
+
+  ctx.font = "24px Arial";
+  ctx.fillText(
+    `Wave ${wave}`,
+    camera.x + camera.width / 2,
+    camera.y + camera.height / 2 + 20
+  );
+
+  ctx.shadowBlur = 0;
   ctx.restore();
 }

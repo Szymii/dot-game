@@ -2,7 +2,7 @@ import { fireBullets } from "../bullets";
 import { gameEvents } from "../events/EventEmitter";
 import { gameState } from "../state/gameState";
 import { loadedIcons } from "../utils/preloadAssets";
-import type { TurretType } from "./Turret";
+import type { Turret, TurretType } from "./Turret";
 
 export const turretIconMap: Record<TurretType, keyof typeof loadedIcons> = {
   fast: "fastTurret",
@@ -10,7 +10,10 @@ export const turretIconMap: Record<TurretType, keyof typeof loadedIcons> = {
   manyBullets: "multiBulletTurret",
 };
 
-export function drawTurrets(ctx: CanvasRenderingContext2D) {
+export function drawTurrets(
+  ctx: CanvasRenderingContext2D,
+  previewTurret: Turret | null
+) {
   ctx.save();
   ctx.translate(-gameState.camera.x, -gameState.camera.y);
 
@@ -21,6 +24,22 @@ export function drawTurrets(ctx: CanvasRenderingContext2D) {
     const size = turret.radius * 2;
     ctx.drawImage(icon, turret.x - size / 2, turret.y - size / 2, size, size);
   });
+
+  if (previewTurret) {
+    const iconKey = turretIconMap[previewTurret.type];
+    const icon = loadedIcons[iconKey];
+
+    ctx.globalAlpha = 0.7;
+    const size = previewTurret.radius * 2;
+    ctx.drawImage(
+      icon,
+      previewTurret.x - size / 2,
+      previewTurret.y - size / 2,
+      size,
+      size
+    );
+    ctx.globalAlpha = 1.0;
+  }
 
   gameState.turretBullets.forEach((bullet) => {
     ctx.beginPath();
@@ -35,7 +54,6 @@ export function drawTurrets(ctx: CanvasRenderingContext2D) {
 
 export function updateTurrets(timestamp: number) {
   gameState.turrets.forEach((turret) => {
-    // Strzelaj zgodnie z firingPattern
     const timeSinceLastShot = timestamp - turret.firingPattern.lastFired;
     const shotInterval = 1000 / turret.firingPattern.fireRate;
     if (timeSinceLastShot >= shotInterval) {

@@ -32,13 +32,11 @@ export function checkCollision(
   let newDx = dx;
   let newDy = dy;
 
-  // Player’s new position if moved
   let nextX = player.x + newDx;
   let nextY = player.y + newDy;
 
   obstacles.forEach((obstacle) => {
     if (obstacle.type === "rectangle") {
-      // Find closest point on rectangle to player’s center
       const closestX = Math.max(
         obstacle.x,
         Math.min(nextX, obstacle.x + obstacle.width!)
@@ -68,7 +66,6 @@ export function checkCollision(
         }
       }
     } else if (obstacle.type === "circle") {
-      // Circle collision
       const distanceX = nextX - obstacle.x;
       const distanceY = nextY - obstacle.y;
       const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
@@ -91,7 +88,6 @@ export function checkCollision(
     }
   });
 
-  // Compute adjusted dx and dy based on final position
   newDx = nextX - player.x;
   newDy = nextY - player.y;
 

@@ -21,7 +21,6 @@ export function initConsole(app: HTMLElement) {
   consoleContainer.appendChild(output);
   app.appendChild(consoleContainer);
 
-  // Funkcja do dodawania wiadomości do konsoli
   function logToConsole(message: string) {
     const messageEl = document.createElement("div");
     messageEl.textContent = message;
@@ -29,17 +28,15 @@ export function initConsole(app: HTMLElement) {
     output.scrollTop = output.scrollHeight;
   }
 
-  // Obsługa wysyłania komend
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && input.value.trim()) {
       const [command, ...args] = input.value.trim().split(/\s+/);
       gameEvents.emit("consoleCommand", command, args);
       logToConsole(`> ${input.value}`);
-      input.value = ""; // Wyczyść input
+      input.value = "";
     }
   });
 
-  // Obsługa pokazywania/ukrywania konsoli (klawisz `~`)
   document.addEventListener("keydown", (e) => {
     if (e.key === "`" || e.key === "~") {
       e.preventDefault();
@@ -51,7 +48,6 @@ export function initConsole(app: HTMLElement) {
     }
   });
 
-  // Subskrybuj odpowiedzi konsoli (np. błędy, potwierdzenia)
   gameEvents.on("consoleCommand", (command, args) => {
     logToConsole(`Executed: ${command} ${args.join(" ")}`);
   });

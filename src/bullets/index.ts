@@ -1,14 +1,13 @@
 import { gameState } from "../state/gameState";
 import type { Bullet } from "./Bullet";
 
-// Function to create bullets based on a firing pattern
 export function fireBullets(
   x: number,
   y: number,
   bulletCount: number,
   initialAngle: number,
-  bulletSpeed: number, // Use speed from firingPattern
-  bulletColor: string, // Use color from player/enemy
+  bulletSpeed: number,
+  bulletColor: string,
   bulletRadius: number = 3
 ): Bullet[] {
   const bullets: Bullet[] = [];
@@ -30,7 +29,7 @@ export function fireBullets(
       vy,
       radius: bulletRadius,
       speed: bulletSpeed,
-      color: bulletColor, // Set bullet color
+      color: bulletColor,
     };
     bullets.push(bullet);
   }
@@ -38,14 +37,12 @@ export function fireBullets(
   return bullets;
 }
 
-// Function to update bullet positions and handle collisions
 export function updateBullets(bullets: Bullet[], canvas: HTMLCanvasElement) {
   for (let i = bullets.length - 1; i >= 0; i--) {
     const bullet = bullets[i];
     bullet.x += bullet.vx;
     bullet.y += bullet.vy;
 
-    // Check for collisions with obstacles
     let collided = false;
     for (const obstacle of gameState.obstacles) {
       if (obstacle.type === "rectangle") {
@@ -80,7 +77,6 @@ export function updateBullets(bullets: Bullet[], canvas: HTMLCanvasElement) {
       }
     }
 
-    // Remove bullet if it collides with an obstacle or leaves the canvas
     if (
       collided ||
       bullet.x < 0 ||
@@ -93,7 +89,6 @@ export function updateBullets(bullets: Bullet[], canvas: HTMLCanvasElement) {
   }
 }
 
-// Function to draw bullets
 export function drawBullets(ctx: CanvasRenderingContext2D, bullets: Bullet[]) {
   ctx.save();
   ctx.translate(-gameState.camera.x, -gameState.camera.y);

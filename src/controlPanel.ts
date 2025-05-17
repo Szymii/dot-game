@@ -22,7 +22,6 @@ export function createControlPanel(app: HTMLElement, player: Player) {
 
   if (import.meta.env.MODE === "development") app.appendChild(controlPanel);
 
-  // Movement state
   const keys: { [key: string]: boolean } = {
     w: false,
     a: false,
@@ -30,7 +29,6 @@ export function createControlPanel(app: HTMLElement, player: Player) {
     d: false,
   };
 
-  // Key event listeners
   document.addEventListener("keydown", (e) => {
     const key = e.key.toLowerCase();
     if (key in keys) {
@@ -47,7 +45,6 @@ export function createControlPanel(app: HTMLElement, player: Player) {
     }
   });
 
-  // Update key style
   function updateKeyStyle(key: string, isPressed: boolean) {
     const keyElement = document.getElementById(`key-${key}`)!;
     keyElement.classList.toggle("bg-blue-500", isPressed);

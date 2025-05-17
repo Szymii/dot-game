@@ -47,7 +47,6 @@ export function checkPowerUpCollisions(): void {
       gameState.player.radius + Math.max(powerUp.width, powerUp.height) / 2;
 
     if (distance < collisionDistance) {
-      // Apply the power-up effect
       switch (powerUp.type) {
         case "extraBullet":
           gameState.player.firingPattern.bulletCount += 1;
@@ -63,7 +62,6 @@ export function checkPowerUpCollisions(): void {
           throw new Error(`Unhandled power-up type: ${exhaustiveCheck}`);
         }
       }
-      // Remove the power-up after collection
       gameState.powerUps.splice(i, 1);
     }
   }

@@ -5,7 +5,6 @@ import { predefinedTurrets } from "../state/predefinedTurrets";
 import { loadedIcons } from "../utils/preloadAssets";
 import type { Turret, TurretType } from "./Turret";
 
-// Słownik opisów wieżyczek po angielsku
 const turretDescriptions: Record<
   TurretType,
   { title: string; description: string }
@@ -27,6 +26,7 @@ const turretDescriptions: Record<
 export function initTurretManager(canvas: HTMLCanvasElement) {
   let selectedTurretType: TurretType | null = null;
   let canPlaceTurret = false;
+  let previewTurret: Turret | null = null;
 
   const turretUI = document.createElement("div");
   turretUI.id = "turret-ui";
@@ -64,37 +64,50 @@ export function initTurretManager(canvas: HTMLCanvasElement) {
   `;
   document.body.appendChild(turretUI);
 
-  // Pokazuj interfejs w fazie budowania
   gameEvents.on("waveCleared", () => {
     canPlaceTurret = true;
     turretUI.classList.remove("hidden");
   });
 
-  // Ukrywaj interfejs po zakończeniu przerwy
   gameEvents.on("waveStarted", () => {
     canPlaceTurret = false;
     selectedTurretType = null;
+    previewTurret = null;
     turretUI.classList.add("hidden");
   });
 
-  // Obsługa wyboru wieżyczki
   const fastTurretBtn = document.getElementById("fast-turret");
   const fastBulletsTurretBtn = document.getElementById("fast-bullets-turret");
   const manyBulletsTurretBtn = document.getElementById("many-bullets-turret");
 
   fastTurretBtn?.addEventListener("click", () => {
     selectedTurretType = "fast";
+    previewTurret = { ...predefinedTurrets.fast, x: 0, y: 0 };
   });
   fastBulletsTurretBtn?.addEventListener("click", () => {
     selectedTurretType = "fastBullets";
+    previewTurret = { ...predefinedTurrets.fastBullets, x: 0, y: 0 };
   });
   manyBulletsTurretBtn?.addEventListener("click", () => {
     selectedTurretType = "manyBullets";
+    previewTurret = { ...predefinedTurrets.manyBullets, x: 0, y: 0 };
   });
 
-  // Obsługa kliknięcia na canvasie do umieszczania wieżyczki
+  canvas.addEventListener("mousemove", (event) => {
+    if (gameState.waveEnding && previewTurret) {
+      const rect = canvas.getBoundingClientRect();
+      previewTurret.x = event.clientX - rect.left + gameState.camera.x;
+      previewTurret.y = event.clientY - rect.top + gameState.camera.y;
+    }
+  });
+
   canvas.addEventListener("click", (event) => {
-    if (gameState.waveEnding && canPlaceTurret && selectedTurretType) {
+    if (
+      gameState.waveEnding &&
+      canPlaceTurret &&
+      selectedTurretType &&
+      previewTurret
+    ) {
       const rect = canvas.getBoundingClientRect();
       const x = event.clientX - rect.left + gameState.camera.x;
       const y = event.clientY - rect.top + gameState.camera.y;
@@ -108,6 +121,9 @@ export function initTurretManager(canvas: HTMLCanvasElement) {
       gameState.turrets.push(turret);
       canPlaceTurret = false;
       selectedTurretType = null;
+      previewTurret = null;
     }
   });
+
+  return { getPreviewTurret: () => previewTurret };
 }

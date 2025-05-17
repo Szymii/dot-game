@@ -1,4 +1,3 @@
-// Generic obstacle interface for extensibility
 export type Obstacle = Rectangle | Circle;
 
 type Rectangle = {
