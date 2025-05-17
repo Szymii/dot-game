@@ -49,22 +49,11 @@ export async function startGameLoop(
     }
 
     const { playerNextX, playerNextY } = updatePlayer(ctx.canvas);
-
     checkBulletCollisionsWithPlayer();
     firePlayerBullets(timestamp);
 
-    const enemyCollisionGameOver = updateEnemies(
-      ctx.canvas,
-      playerNextX,
-      playerNextY,
-      timestamp
-    );
-
-    if (enemyCollisionGameOver) {
-      gameState.gameOver = true;
-    }
-
-    checkBulletCollisionsWithEnemies(timestamp); // todo
+    updateEnemies(ctx.canvas, playerNextX, playerNextY, timestamp);
+    checkBulletCollisionsWithEnemies();
 
     if (
       gameState.enemies.length === 0 &&
@@ -84,7 +73,7 @@ export async function startGameLoop(
     drawBullets(ctx, gameState.enemyBullets);
 
     drawPowerUps(ctx);
-    checkPowerUpCollisions(); // todo
+    checkPowerUpCollisions();
 
     drawObstacles(ctx);
     drawMap(ctx);

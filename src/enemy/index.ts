@@ -8,33 +8,20 @@ export function drawEnemies(ctx: CanvasRenderingContext2D) {
   ctx.translate(-gameState.camera.x, -gameState.camera.y);
 
   gameState.enemies.forEach((enemy) => {
-    const { x, y, radius, color, hp } = enemy;
-
-    ctx.save();
-    ctx.translate(x, y);
-
     ctx.beginPath();
-    ctx.ellipse(0, 0, radius, radius * 0.5, 0, 0, Math.PI * 2);
-    ctx.fillStyle = color;
+    ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+    ctx.fillStyle = enemy.color;
     ctx.fill();
     ctx.closePath();
 
-    ctx.beginPath();
-    ctx.arc(0, -radius * 0.5, radius * 0.5, Math.PI, 0);
-    ctx.fillStyle = "lightblue";
-    ctx.fill();
-    ctx.closePath();
-
-    ctx.restore();
-
-    const brightness = getBrightness(color);
+    const brightness = getBrightness(enemy.color);
     const textColor = brightness > 150 ? "black" : "white";
 
     ctx.fillStyle = textColor;
     ctx.font = "bold 16px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(`${hp}`, x, y);
+    ctx.fillText(`${enemy.hp}`, enemy.x, enemy.y);
   });
 
   ctx.restore();
@@ -45,9 +32,7 @@ export function updateEnemies(
   playerNextX: number,
   playerNextY: number,
   timestamp: number
-): boolean {
-  let gameOver = false;
-
+) {
   gameState.enemies.forEach((enemy, index) => {
     const speedMagnitude = Math.sqrt(enemy.vx * enemy.vx + enemy.vy * enemy.vy);
     if (speedMagnitude !== 0) {
@@ -55,7 +40,6 @@ export function updateEnemies(
       enemy.vy = (enemy.vy / speedMagnitude) * enemy.speed;
     }
 
-    // Enemy firing logic
     const timeSinceLastShot = timestamp - enemy.firingPattern.lastFired;
     const shotInterval = 1000 / enemy.firingPattern.fireRate;
     if (timeSinceLastShot >= shotInterval) {
@@ -155,7 +139,7 @@ export function updateEnemies(
     const dy = nextY - playerNextY;
     const distance = Math.sqrt(dx * dx + dy * dy);
     if (distance < enemy.radius + gameState.player.radius) {
-      gameOver = true;
+      gameState.gameOver = true;
       return;
     }
 
@@ -201,11 +185,9 @@ export function updateEnemies(
     enemy.x = nextX;
     enemy.y = nextY;
   });
-
-  return gameOver;
 }
 
-export function checkBulletCollisionsWithEnemies(timestamp: number) {
+export function checkBulletCollisionsWithEnemies() {
   for (let i = gameState.enemies.length - 1; i >= 0; i--) {
     const enemy = gameState.enemies[i];
     for (let j = gameState.playerBullets.length - 1; j >= 0; j--) {
@@ -216,12 +198,7 @@ export function checkBulletCollisionsWithEnemies(timestamp: number) {
       const combinedRadius = bullet.radius + enemy.radius;
 
       if (distance < combinedRadius) {
-        enemy.hp -= 1;
-        gameState.playerBullets.splice(j, 1);
-        if (enemy.hp <= 0) {
-          gameEvents.emit("enemyKilled", enemy, timestamp);
-          break;
-        }
+        gameEvents.emit("enemyHit", i, j);
       }
     }
   }

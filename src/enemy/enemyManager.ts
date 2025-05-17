@@ -28,6 +28,22 @@ export function killEnemy(enemy: Enemy, timestamp: number) {
 }
 
 export function initEnemyManager() {
+  gameEvents.on("enemyHit", (enemyIndex: number, bulletIndex: number) => {
+    if (
+      enemyIndex >= 0 &&
+      enemyIndex < gameState.enemies.length &&
+      bulletIndex >= 0 &&
+      bulletIndex < gameState.playerBullets.length
+    ) {
+      const enemy = gameState.enemies[enemyIndex];
+      enemy.hp -= 1;
+      gameState.playerBullets.splice(bulletIndex, 1);
+      if (enemy.hp <= 0) {
+        gameEvents.emit("enemyKilled", enemy, Date.now());
+      }
+    }
+  });
+
   gameEvents.on("enemyKilled", (enemy: Enemy, timestamp: number) => {
     killEnemy(enemy, timestamp);
   });
