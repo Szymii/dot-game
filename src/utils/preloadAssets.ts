@@ -1,10 +1,12 @@
-const icons: Record<string, string> = {
+type Icon = Record<keyof typeof icons, HTMLImageElement>;
+const icons = {
   extraBullet: "/dot-game/extraBullet.svg",
   fasterFireRate: "/dot-game/fasterFireRate.svg",
   fasterBullets: "/dot-game/fasterBullets.svg",
-};
+  ship: "/dot-game/ship.svg",
+} as const;
 
-export const loadedIcons: Record<string, HTMLImageElement> = {};
+export const loadedIcons: Icon = {} as Icon;
 
 export async function preloadIcons(): Promise<void> {
   const loadPromises = Object.entries(icons).map(([type, src]) => {
@@ -12,7 +14,7 @@ export async function preloadIcons(): Promise<void> {
       const img = new Image();
       img.src = src;
       img.onload = () => {
-        loadedIcons[type] = img;
+        loadedIcons[type as keyof Icon] = img;
         resolve();
       };
       img.onerror = () => {

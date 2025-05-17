@@ -1,33 +1,26 @@
-// player.ts
 import { fireBullets } from "../bullets";
 import { checkCollision } from "../obstacles";
 import { gameState } from "../state/gameState";
-import { getBrightness } from "../utils/getBrightness";
+import { loadedIcons } from "../utils/preloadAssets";
 
 export function drawPlayer(ctx: CanvasRenderingContext2D) {
   ctx.save();
   ctx.translate(-gameState.camera.x, -gameState.camera.y);
 
-  ctx.beginPath();
-  ctx.arc(
-    gameState.player.x,
-    gameState.player.y,
-    gameState.player.radius,
-    0,
-    Math.PI * 2
-  );
+  const icon = loadedIcons["ship"];
+  const size = gameState.player.radius * 2;
+
+  const x = gameState.player.x - size / 2;
+  const y = gameState.player.y - size / 2;
+
+  ctx.save();
+
+  ctx.drawImage(icon, x, y, size, size);
+
+  ctx.globalCompositeOperation = "source-in";
   ctx.fillStyle = gameState.player.color;
-  ctx.fill();
-  ctx.closePath();
-
-  const brightness = getBrightness(gameState.player.color);
-  const textColor = brightness > 150 ? "black" : "white";
-
-  ctx.font = "bold 14px Arial";
-  ctx.fillStyle = textColor;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("You", gameState.player.x, gameState.player.y);
+  ctx.fillRect(x, y, size, size);
+  ctx.restore();
 
   ctx.restore();
 }
